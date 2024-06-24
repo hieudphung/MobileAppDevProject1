@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 
-void main() {
-  runApp(const MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  runApp(const FinanceApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class FinanceApp extends StatelessWidget {
+  const FinanceApp({super.key});
 
   // This widget is the root of your application.
   @override
