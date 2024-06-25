@@ -28,18 +28,17 @@ class ExpenseDatabase {
 
   Future _createDatabase(Database db, int version) async {
     const idType = 'INTEGER PRIMARY KEY AUTOINCREMENT';
-    const boolType = 'BOOLEAN NOT NULL';
     const integerType = 'INTEGER NOT NULL';
 
       await db.execute(
         '''
       CREATE TABLE IF NOT EXISTS $_expenseTable ( 
     ${ExpenseFields.id} $idType, 
-    ${ExpenseFields.isExpense} $boolType,
+    ${ExpenseFields.isExpense} $integerType,
     ${ExpenseFields.cost} $integerType,
     ${ExpenseFields.expenseType} $integerType,
-    ${ExpenseFields.month} $integerType,
-    )
+    ${ExpenseFields.month} $integerType
+    );
   ''');
   }
 
@@ -79,7 +78,7 @@ class ExpenseDatabase {
       return [
         for (final {
               ExpenseFields.id : id as int,
-              ExpenseFields.isExpense : isExpense as bool,
+              ExpenseFields.isExpense : isExpense as int,
               ExpenseFields.cost : cost as int,
               ExpenseFields.expenseType : expenseType as int,
               ExpenseFields.month : month as int,
@@ -88,22 +87,21 @@ class ExpenseDatabase {
       ];
     }
 
-  Future<List<Expense>> filterExpenses(bool expenseFilter, int typeFilter, int monthFilter) async {
+  Future<List<Expense>> filterExpenses(int expenseFilter, int monthFilter) async {
     final db = await instance.database;
 
       final List<Map<String, Object?>> expenseMap = await db.rawQuery(
         '''
       SELECT * FROM $_expenseTable where 
-      ${ExpenseFields.isExpense}=?, 
-      ${ExpenseFields.expenseType}=?, 
+      ${ExpenseFields.isExpense}=? AND
       ${ExpenseFields.month}=?
-        ''', 
-        [expenseFilter, typeFilter, monthFilter]);
+      ORDER BY ${ExpenseFields.expenseType}''', 
+        [expenseFilter, monthFilter]);
         
       return [
         for (final {
               ExpenseFields.id : id as int,
-              ExpenseFields.isExpense : isExpense as bool,
+              ExpenseFields.isExpense : isExpense as int,
               ExpenseFields.cost : cost as int,
               ExpenseFields.expenseType : expenseType as int,
               ExpenseFields.month : month as int,

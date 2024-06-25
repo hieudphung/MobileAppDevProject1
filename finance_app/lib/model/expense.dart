@@ -12,14 +12,14 @@ class ExpenseFields {
 }
 
 class Expense {
-  final int id;
-  final bool isExpense;
+  final int? id;
+  final int isExpense;    //NOTE: isExpense is an integer, but is functionally supposed to be a boolean, just SQL doesn't take bool
   final int cost;
   final int expenseType;
   final int month;
 
   const Expense({
-    required this.id,
+    this.id,
     required this.isExpense,
     required this.cost,
     required this.expenseType,
