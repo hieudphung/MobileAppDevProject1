@@ -1,16 +1,18 @@
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import '../model/expense.dart';
+import '../model/goal.dart';
 
 //Expense database here
 const String _expenseTable = 'expenses';
+const String _goalTable = 'goals';
 
-class ExpenseDatabase {
-  static final ExpenseDatabase instance = ExpenseDatabase._init();
+class FinanceDatabase {
+  static final FinanceDatabase instance = FinanceDatabase._init();
 
   static Database? _database;
 
-  ExpenseDatabase._init();
+  FinanceDatabase._init();
 
   Future<Database> get database async {
     if (_database != null) return _database!;
@@ -29,6 +31,7 @@ class ExpenseDatabase {
   Future _createDatabase(Database db, int version) async {
     const idType = 'INTEGER PRIMARY KEY AUTOINCREMENT';
     const integerType = 'INTEGER NOT NULL';
+    const stringType = 'STRING NOT NULL';
 
       await db.execute(
         '''
@@ -39,6 +42,15 @@ class ExpenseDatabase {
     ${ExpenseFields.expenseType} $integerType,
     ${ExpenseFields.month} $integerType
     );
+
+    CREATE TABLE IF NOT EXISTS $_goalTable (
+    ${GoalFields.id} $idType, 
+    ${GoalFields.name} $stringType,
+    ${GoalFields.goalType} $integerType,
+    ${GoalFields.description} $stringType,
+    ${GoalFields.goalCurrent} $integerType,
+    ${GoalFields.goalTarget} $integerType,
+    )
   ''');
   }
 
@@ -48,6 +60,8 @@ class ExpenseDatabase {
     db.close();
   }
 
+
+  //Everything below for the Expense Table
   //Not doing major manipulation, just add, delete, and filters
 
   Future<void> addExpense(Expense expense) async {
@@ -70,27 +84,27 @@ class ExpenseDatabase {
   }
 
   // For getting expenses and income
-    Future<List<Expense>> expenses() async {
-      final db = await instance.database;
+  Future<List<Expense>> expenses() async {
+    final db = await instance.database;
 
-      final List<Map<String, Object?>> expenseMap = await db.query(_expenseTable);
+    final List<Map<String, Object?>> expenseMap = await db.query(_expenseTable);
 
-      return [
-        for (final {
-              ExpenseFields.id : id as int,
-              ExpenseFields.isExpense : isExpense as int,
-              ExpenseFields.cost : cost as int,
-              ExpenseFields.expenseType : expenseType as int,
-              ExpenseFields.month : month as int,
-            } in expenseMap)
-          Expense(id: id, isExpense: isExpense, cost: cost, expenseType: expenseType, month: month),
-      ];
-    }
+    return [
+      for (final {
+            ExpenseFields.id : id as int,
+            ExpenseFields.isExpense : isExpense as int,
+            ExpenseFields.cost : cost as int,
+            ExpenseFields.expenseType : expenseType as int,
+            ExpenseFields.month : month as int,
+          } in expenseMap)
+        Expense(id: id, isExpense: isExpense, cost: cost, expenseType: expenseType, month: month),
+    ];
+  }
 
   Future<List<Expense>> filterExpenses(int expenseFilter, int monthFilter) async {
     final db = await instance.database;
 
-      final List<Map<String, Object?>> expenseMap = await db.rawQuery(
+    final List<Map<String, Object?>> expenseMap = await db.rawQuery(
         '''
       SELECT * FROM $_expenseTable where 
       ${ExpenseFields.isExpense}=? AND
@@ -98,15 +112,63 @@ class ExpenseDatabase {
       ORDER BY ${ExpenseFields.expenseType}''', 
         [expenseFilter, monthFilter]);
         
-      return [
-        for (final {
-              ExpenseFields.id : id as int,
-              ExpenseFields.isExpense : isExpense as int,
-              ExpenseFields.cost : cost as int,
-              ExpenseFields.expenseType : expenseType as int,
-              ExpenseFields.month : month as int,
-            } in expenseMap)
-          Expense(id: id, isExpense: isExpense, cost: cost, expenseType: expenseType, month: month),
-      ];
+    return [
+      for (final {
+            ExpenseFields.id : id as int,
+            ExpenseFields.isExpense : isExpense as int,
+            ExpenseFields.cost : cost as int,
+            ExpenseFields.expenseType : expenseType as int,
+            ExpenseFields.month : month as int,
+          } in expenseMap)
+        Expense(id: id, isExpense: isExpense, cost: cost, expenseType: expenseType, month: month),
+    ];
+  }
+
+  //For the Goals Table
+  //Only one that needs updating money
+
+  Future<void> addGoal(Goal goal) async {
+    final db = await instance.database;
+
+    await db.insert(
+      _goalTable,
+      goal.toMap(),
+    );
+  }
+
+  Future<void> deleteGoal(int id) async {
+    final db = await instance.database;
+
+    await db.delete(
+      _goalTable,
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+  }
+
+  Future<void> updateGoal(Goal updatedGoal) async {
+    final db = await instance.database;
+
+    db.update(_goalTable, updatedGoal.toMap(),
+        where: 'id = ?', 
+        whereArgs: [updatedGoal.id]);
+  }
+
+  Future<List<Goal>> goals() async {
+    final db = await instance.database;
+
+    final List<Map<String, Object?>> goalMap = await db.query(_goalTable);
+
+    return [
+      for (final {
+            GoalFields.id : id as int,
+            GoalFields.name : name as String,
+            GoalFields.goalType : goalType as int,
+            GoalFields.description : description as String,
+            GoalFields.goalCurrent : goalCurrent as int,
+            GoalFields.goalTarget : goalTarget as int,
+          } in goalMap)
+        Goal(id: id, name: name, goalType: goalType, description: description, goalCurrent: goalCurrent, goalTarget: goalTarget),
+    ];
   }
 }

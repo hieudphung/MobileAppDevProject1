@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../database/expense_table.dart';
+import '../database/finance_tables.dart';
 import '../model/expense.dart';
 
 class TestPage extends StatefulWidget {
@@ -23,17 +23,17 @@ class _TestExpensePageState extends State<TestPage> {
       month: 6,
     );
 
-    await ExpenseDatabase.instance.addExpense(newExpense);
+    await FinanceDatabase.instance.addExpense(newExpense);
   }
 
   void removeExpense(int index) async {
-    await ExpenseDatabase.instance.deleteExpense(index);
+    await FinanceDatabase.instance.deleteExpense(index);
   }
 
   void getExpenses() async {
     //expenses = await ExpenseDatabase.instance.expenses();
   
-    expenses = await ExpenseDatabase.instance.filterExpenses(0, 6);
+    expenses = await FinanceDatabase.instance.filterExpenses(0, 6);
   }
 
   void removeExpenseButton(int index) {
@@ -61,7 +61,7 @@ class _TestExpensePageState extends State<TestPage> {
 
   @override
   void dispose() {
-    ExpenseDatabase.instance.close();
+    FinanceDatabase.instance.close();
 
     super.dispose();
   }
