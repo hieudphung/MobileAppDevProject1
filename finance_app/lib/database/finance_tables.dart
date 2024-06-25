@@ -17,7 +17,7 @@ class FinanceDatabase {
   Future<Database> get database async {
     if (_database != null) return _database!;
 
-    _database = await _initDB('notes.db');
+    _database = await _initDB('finances_table.db');
     return _database!;
   }
 
@@ -25,32 +25,39 @@ class FinanceDatabase {
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, filePath);
 
+    print('aaaa');
+
     return await openDatabase(path, version: 1, onCreate: _createDatabase);
   }
 
   Future _createDatabase(Database db, int version) async {
     const idType = 'INTEGER PRIMARY KEY AUTOINCREMENT';
     const integerType = 'INTEGER NOT NULL';
-    const stringType = 'STRING NOT NULL';
+    const stringType = 'TEXT NOT NULL';
 
-      await db.execute(
-        '''
-      CREATE TABLE IF NOT EXISTS $_expenseTable ( 
+    print('xxxxxxxxxx');
+
+    db.execute(
+      '''
+    CREATE TABLE $_expenseTable ( 
     ${ExpenseFields.id} $idType, 
     ${ExpenseFields.isExpense} $integerType,
     ${ExpenseFields.cost} $integerType,
     ${ExpenseFields.expenseType} $integerType,
     ${ExpenseFields.month} $integerType
     );
+  ''');
 
-    CREATE TABLE IF NOT EXISTS $_goalTable (
+    db.execute(
+      '''
+    CREATE TABLE $_goalTable (
     ${GoalFields.id} $idType, 
     ${GoalFields.name} $stringType,
     ${GoalFields.goalType} $integerType,
     ${GoalFields.description} $stringType,
     ${GoalFields.goalCurrent} $integerType,
-    ${GoalFields.goalTarget} $integerType,
-    )
+    ${GoalFields.goalTarget} $integerType
+    );
   ''');
   }
 
@@ -125,7 +132,7 @@ class FinanceDatabase {
   }
 
   //For the Goals Table
-  //Only one that needs updating money
+  //Only one that needs updating moneyc
 
   Future<void> addGoal(Goal goal) async {
     final db = await instance.database;
