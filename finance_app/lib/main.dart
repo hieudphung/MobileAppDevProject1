@@ -1,48 +1,61 @@
 import 'package:flutter/material.dart';
-//import '../pages/test_expense_page.dart';
-
 import 'package:fl_chart/fl_chart.dart';
+import 'expense.dart';
+import 'recent_transactions_page.dart';
+import 'recent_goals_page.dart';
+import 'random_tips_page.dart';
 
-
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-
-  runApp(const FinanceApp());
+void main() {
+  runApp(const MyApp());
 }
 
-class FinanceApp extends StatelessWidget {
-  const FinanceApp({super.key});
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Finance Tracker',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
+        scaffoldBackgroundColor: Colors.blueGrey[300], // Change the background color here
       ),
-      //home: const TestPage(title: 'Flutter Demo Home Page'),
-      home: HomePage(),
+      home: const MyHomePage(),
     );
   }
 }
 
+class MyHomePage extends StatefulWidget {
+  const MyHomePage({super.key});
 
-class HomePage extends StatefulWidget {
   @override
-  _HomePageState createState() => _HomePageState();
+  State<MyHomePage> createState() => _MyHomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
+  List<Expense> _expenses = [];
 
-  static List<Widget> _widgetOptions = <Widget>[
+  static List<Widget> _widgetOptions(BuildContext context, List<Expense> expenses) => <Widget>[
     HomeScreen(),
     GoalsScreen(),
-    SpendingScreen(),
+    SpendingScreen(expenses: expenses),
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadExpenses();
+  }
+
+  void _loadExpenses() async {
+    // Load expenses from the database
+    final expenses = await getExpenses(); // Implement this function to fetch expenses from the database
+    setState(() {
+      _expenses = expenses;
+    });
+  }
 
   void _onItemTapped(int index) {
     setState(() {
@@ -56,7 +69,7 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         title: Text('Finance Tracker'),
       ),
-      body: _widgetOptions.elementAt(_selectedIndex),
+      body: _widgetOptions(context, _expenses).elementAt(_selectedIndex),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
@@ -75,41 +88,87 @@ class _HomePageState extends State<HomePage> {
         currentIndex: _selectedIndex,
         selectedItemColor: Colors.amber[800],
         onTap: _onItemTapped,
+        selectedFontSize: 18.0, // Adjust as needed
+        unselectedFontSize: 16.0, // Adjust as needed
+        selectedLabelStyle: TextStyle(fontWeight: FontWeight.bold), // Adjust as needed
+        unselectedLabelStyle: TextStyle(fontWeight: FontWeight.normal), // Adjust as needed
       ),
+
     );
   }
 }
-
 class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       child: Column(
         children: [
-          SectionCard(title: 'Recent Spending / Income'),
-          SectionCard(title: 'Recent Goals'),
-          SectionCard(title: 'Random Tips'),
+          SectionCard(
+            title: 'Recent Spending / Income',
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => RecentTransactionsPage()),
+              );
+            },
+            color: Colors.blueGrey, // Example color for Recent Spending / Income
+          ),
+          SectionCard(
+            title: 'Recent Goals',
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => RecentGoalsPage()),
+              );
+            },
+            color: Colors.blueGrey, // Example color for Recent Goals
+          ),
+          SectionCard(
+            title: 'Random Tips',
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => RandomTipsPage()),
+              );
+            },
+            color: Colors.blueGrey, // Example color for Random Tips
+          ),
         ],
       ),
     );
   }
 }
 
+
+
 class SectionCard extends StatelessWidget {
   final String title;
+  final VoidCallback onTap;
+  final Color color;
 
-  SectionCard({required this.title});
+  SectionCard({required this.title, required this.onTap, required this.color});
 
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: EdgeInsets.all(10.0),
-      child: ListTile(
-        title: Text(title),
+      margin: EdgeInsets.all(11.0), // Increased margin for larger bubble appearance
+      color: color,
+      child: Padding(
+        padding: EdgeInsets.all(55.0),
+        child: ListTile(
+          title: Text(
+            title,
+            style: TextStyle(color: Colors.white, fontSize: 22.0, fontWeight: FontWeight.bold), // White text style
+          ),
+          onTap: onTap,
+        ),
       ),
     );
   }
 }
+
+// update
+
 
 class GoalsScreen extends StatelessWidget {
   @override
@@ -127,7 +186,7 @@ class GoalsScreen extends StatelessWidget {
         ),
         Expanded(
           child: ListView.builder(
-            itemCount: 10, // replace with your goals count
+            itemCount: 0, // replace with your goals count
             itemBuilder: (context, index) {
               return GoalCard();
             },
@@ -242,19 +301,15 @@ class _AddGoalFormState extends State<AddGoalForm> {
 }
 
 class SpendingScreen extends StatefulWidget {
+  final List<Expense> expenses;
+
+  SpendingScreen({required this.expenses});
+
   @override
   _SpendingScreenState createState() => _SpendingScreenState();
 }
 
 class _SpendingScreenState extends State<SpendingScreen> {
-  List<Expenditure> _expenditures = [];
-
-  void _addExpenditure(Expenditure expenditure) {
-    setState(() {
-      _expenditures.add(expenditure);
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -265,11 +320,11 @@ class _SpendingScreenState extends State<SpendingScreen> {
         Expanded(
           child: PieChart(
             PieChartData(
-              sections: _expenditures
+              sections: widget.expenses
                   .map((e) => PieChartSectionData(
-                value: e.amount,
-                title: '${e.type}: \$${e.amount.toStringAsFixed(2)}',
-                color: e.color,
+                value: e.cost.toDouble(),
+                title: 'Type ${e.expenseType}: \$${e.cost}',
+                color: _getColorByType(e.expenseType),
               ))
                   .toList(),
             ),
@@ -277,7 +332,7 @@ class _SpendingScreenState extends State<SpendingScreen> {
         ),
         ElevatedButton(
           onPressed: () {
-            _showAddExpenditureDialog(context);
+            _showAddExpenseDialog(context);
           },
           child: Text('Add Expenditure'),
         ),
@@ -285,13 +340,17 @@ class _SpendingScreenState extends State<SpendingScreen> {
     );
   }
 
-  void _showAddExpenditureDialog(BuildContext context) {
+  void _showAddExpenseDialog(BuildContext context) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text('Add New Expenditure'),
-          content: AddExpenditureForm(onAdd: _addExpenditure),
+          content: AddExpenseForm(onAdd: (expense) {
+            setState(() {
+              widget.expenses.add(expense);
+            });
+          }),
           actions: <Widget>[
             TextButton(
               child: Text('Cancel'),
@@ -304,20 +363,33 @@ class _SpendingScreenState extends State<SpendingScreen> {
       },
     );
   }
+
+  Color _getColorByType(int type) {
+    switch (type) {
+      case 1:
+        return Colors.blue;
+      case 2:
+        return Colors.green;
+      case 3:
+        return Colors.red;
+      default:
+        return Colors.grey;
+    }
+  }
 }
 
-class AddExpenditureForm extends StatefulWidget {
-  final Function(Expenditure) onAdd;
+class AddExpenseForm extends StatefulWidget {
+  final Function(Expense) onAdd;
 
-  AddExpenditureForm({required this.onAdd});
+  AddExpenseForm({required this.onAdd});
 
   @override
-  _AddExpenditureFormState createState() => _AddExpenditureFormState();
+  _AddExpenseFormState createState() => _AddExpenseFormState();
 }
 
-class _AddExpenditureFormState extends State<AddExpenditureForm> {
+class _AddExpenseFormState extends State<AddExpenseForm> {
   final _formKey = GlobalKey<FormState>();
-  String _expenditureType = 'Groceries';
+  String _expenditureType = '1'; // Default to 1 (Groceries)
   String _amount = '';
 
   @override
@@ -329,10 +401,10 @@ class _AddExpenditureFormState extends State<AddExpenditureForm> {
         children: <Widget>[
           DropdownButtonFormField<String>(
             value: _expenditureType,
-            items: <String>['Groceries', 'Insurance', 'Bills'].map((String value) {
+            items: <String>['1', '2', '3'].map((String value) {
               return DropdownMenuItem<String>(
                 value: value,
-                child: Text(value),
+                child: Text('Type $value'),
               );
             }).toList(),
             decoration: InputDecoration(labelText: 'Expenditure Type'),
@@ -359,12 +431,14 @@ class _AddExpenditureFormState extends State<AddExpenditureForm> {
             onPressed: () {
               if (_formKey.currentState!.validate()) {
                 _formKey.currentState!.save();
-                final expenditure = Expenditure(
-                  type: _expenditureType,
-                  amount: double.parse(_amount),
-                  color: _getColorByType(_expenditureType),
+                final expense = Expense(
+                  id: DateTime.now().millisecondsSinceEpoch,
+                  isExpense: true,
+                  cost: int.parse(_amount),
+                  expenseType: int.parse(_expenditureType),
+                  month: DateTime.now().month,
                 );
-                widget.onAdd(expenditure);
+                widget.onAdd(expense);
                 Navigator.of(context).pop();
               }
             },
@@ -374,29 +448,4 @@ class _AddExpenditureFormState extends State<AddExpenditureForm> {
       ),
     );
   }
-
-  Color _getColorByType(String type) {
-    switch (type) {
-      case 'Groceries':
-        return Colors.blue;
-      case 'Insurance':
-        return Colors.green;
-      case 'Bills':
-        return Colors.red;
-      default:
-        return Colors.grey;
-    }
-  }
-}
-
-class Expenditure {
-  final String type;
-  final double amount;
-  final Color color;
-
-  Expenditure({
-    required this.type,
-    required this.amount,
-    required this.color,
-  });
 }
