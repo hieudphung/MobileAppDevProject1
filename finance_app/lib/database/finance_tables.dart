@@ -25,8 +25,6 @@ class FinanceDatabase {
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, filePath);
 
-    print('aaaa');
-
     return await openDatabase(path, version: 1, onCreate: _createDatabase);
   }
 
@@ -34,8 +32,6 @@ class FinanceDatabase {
     const idType = 'INTEGER PRIMARY KEY AUTOINCREMENT';
     const integerType = 'INTEGER NOT NULL';
     const stringType = 'TEXT NOT NULL';
-
-    print('xxxxxxxxxx');
 
     db.execute(
       '''

@@ -3,6 +3,9 @@ import '../database/finance_tables.dart';
 import '../model/expense.dart';
 import '../model/goal.dart';
 
+import '../widget/expense_card.dart';
+import '../widget/goal_card.dart';
+
 class TestPage extends StatefulWidget {
   const TestPage({super.key, required this.title});
 
@@ -131,15 +134,20 @@ class _TestExpensePageState extends State<TestPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
+            const ExpenseCard(monthNumber: 6),
+            //const GoalCard(),
             /*
             Text(
               '$_counter',
               style: Theme.of(context).textTheme.headlineMedium,
             ),
             */
+            Flexible (
+              child: 
+              ListView.builder(
+          itemCount: goals.length,
+          itemBuilder: (_,int index) => GoalCard(goalId: goals[index].id!, name: goals[index].name, goalType: goals[index].goalType, goalCurrent: goals[index].goalCurrent, goalTarget: goals[index].goalTarget),
+            ),),
             Flexible (
               child: 
                 ListView.builder(
