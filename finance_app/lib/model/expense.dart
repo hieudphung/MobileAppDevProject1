@@ -8,23 +8,26 @@ class ExpenseFields {
   static const String isExpense = 'isExpense';
   static const String cost = 'cost';
   static const String expenseType = 'expenseType';
+  static const String linkedGoal = 'linkedGoal';
   static const String month = 'month';
 }
 
 class Expense {
-  final int? id;
-  final int isExpense;    //NOTE: isExpense is an integer, but is functionally supposed to be a boolean, just SQL doesn't take bool
-  final int cost;
-  final int expenseType;
-  final int month;
-
   const Expense({
     this.id,
     required this.isExpense,
     required this.cost,
     required this.expenseType,
+    required this.linkedGoal,
     required this.month
   });
+
+  final int? id;
+  final int isExpense;    //NOTE: isExpense is an integer, but is functionally supposed to be a boolean, just SQL doesn't take bool
+  final int cost;
+  final int expenseType;
+  final int linkedGoal;   //Not used all the time, but if there are goal-based expenses, get from here
+  final int month;
 
   Map<String, Object?> toMap() {
     return {
@@ -32,13 +35,14 @@ class Expense {
       'isExpense' : isExpense,
       'cost' : cost,
       'expenseType' : expenseType,
+      'linkedGoal' : linkedGoal,
       'month' : month,
     };
   }
 
   @override
   String toString() {
-    return 'Expense{id: $id, isExpense, $isExpense, cost: $cost, expenseType: $expenseType, month: $month}';
+    return 'Expense{id: $id, isExpense, $isExpense, cost: $cost, expenseType: $expenseType, linkedGoal: $linkedGoal, month: $month}';
   }
 
   factory Expense.fromJson(Map<String, dynamic> data) {
@@ -47,6 +51,7 @@ class Expense {
       isExpense: data["isExpense"],
       cost: data["cost"],
       expenseType: data["expenseType"],
+      linkedGoal: data["linkedGoal"],
       month: data["month"],
     );
   }
@@ -55,7 +60,8 @@ class Expense {
       "id": id,
       "isExpense": isExpense,
       "cost": cost,
-      "email": expenseType,
+      "expenseType": expenseType,
+      "linkedGoal": linkedGoal,
       "month": month
   };
 }

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:pie_chart/pie_chart.dart';
 
-import '../database/finance_tables.dart';
-import '../model/expense.dart';
+// import '../database/finance_tables.dart';
+// import '../model/expense.dart';
+
+import '../common/common.dart';
 
 final gradientForExpenses = <List<Color>> [
   [
@@ -40,26 +42,6 @@ class ExpenseCard extends StatelessWidget {
   });
   
   final int monthNumber;
-
-  String getMonth(int month) {
-    switch (month){
-      case 1:
-        return 'January';
-      case 2:
-        return 'February';
-      case 3:
-        return 'March';
-      case 4:
-        return 'April';
-      case 5:
-        return 'May';
-      case 6:
-        return 'June';
-        //Only really adding up until June, to replicate as if goes by current month
-    }
-
-    return 'None';
-  }
 
   @override
   Widget build(BuildContext context) {

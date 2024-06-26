@@ -25,6 +25,7 @@ class _TestExpensePageState extends State<TestPage> {
       isExpense: 1,
       cost: 900,
       expenseType: 1,
+      linkedGoal: 0,    // doesn't need a value, unless added from the pay goal button
       month: 6,
     );
 

@@ -17,7 +17,7 @@ class FinanceDatabase {
   Future<Database> get database async {
     if (_database != null) return _database!;
 
-    _database = await _initDB('finances_table.db');
+    _database = await _initDB('financesTable.db');
     return _database!;
   }
 
@@ -33,6 +33,8 @@ class FinanceDatabase {
     const integerType = 'INTEGER NOT NULL';
     const stringType = 'TEXT NOT NULL';
 
+    print("Database created!");
+
     db.execute(
       '''
     CREATE TABLE $_expenseTable ( 
@@ -40,6 +42,7 @@ class FinanceDatabase {
     ${ExpenseFields.isExpense} $integerType,
     ${ExpenseFields.cost} $integerType,
     ${ExpenseFields.expenseType} $integerType,
+    ${ExpenseFields.linkedGoal} $integerType,
     ${ExpenseFields.month} $integerType
     );
   ''');
@@ -98,9 +101,10 @@ class FinanceDatabase {
             ExpenseFields.isExpense : isExpense as int,
             ExpenseFields.cost : cost as int,
             ExpenseFields.expenseType : expenseType as int,
+            ExpenseFields.linkedGoal : linkedGoal as int,
             ExpenseFields.month : month as int,
           } in expenseMap)
-        Expense(id: id, isExpense: isExpense, cost: cost, expenseType: expenseType, month: month),
+        Expense(id: id, isExpense: isExpense, cost: cost, expenseType: expenseType, linkedGoal: linkedGoal, month: month),
     ];
   }
 
@@ -121,9 +125,10 @@ class FinanceDatabase {
             ExpenseFields.isExpense : isExpense as int,
             ExpenseFields.cost : cost as int,
             ExpenseFields.expenseType : expenseType as int,
+            ExpenseFields.linkedGoal : linkedGoal as int,
             ExpenseFields.month : month as int,
           } in expenseMap)
-        Expense(id: id, isExpense: isExpense, cost: cost, expenseType: expenseType, month: month),
+        Expense(id: id, isExpense: isExpense, cost: cost, expenseType: expenseType, linkedGoal: linkedGoal, month: month),
     ];
   }
 

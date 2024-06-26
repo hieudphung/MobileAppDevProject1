@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:pie_chart/pie_chart.dart';
 
-import '../database/finance_tables.dart';
-import '../model/goal.dart';
+// import '../database/finance_tables.dart';
+// import '../model/goal.dart';
+
+//This is the main card for goal
 
 class GoalCard extends StatelessWidget {
   const GoalCard({super.key,
@@ -94,14 +95,14 @@ class GoalButtons extends StatelessWidget {
     return Row(
       children: <Widget>[
         Expanded(
-              child: OutlinedButton(
+              child: IconButton(
               onPressed: () => {print(goalId)}, 
-              child: const Text('Details'),
+              icon: const Icon(Icons.arrow_forward),
         ),),
         Expanded(
-              child: OutlinedButton(
+              child: IconButton(
               onPressed: () => {print(goalId)}, 
-              child: const Text('Add to Goal'),
+              icon: const Icon(Icons.delete),
         ),),
       ],
     );
