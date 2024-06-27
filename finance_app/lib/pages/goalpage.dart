@@ -6,12 +6,6 @@ import '../finance_provider.dart';
 import '../model/goal.dart';
 import '../widget/goal_card.dart';
 
-//Mostly to have as a null goal
-const emptyGoal = Goal(id: 0, name: '', goalType: 0, description: '', goalCurrent: 0, goalTarget: 0);
-
-//This is an internal variable for the alert form
-Goal goalFromForm = emptyGoal;
-
 class GoalsScreen extends StatelessWidget {
  const GoalsScreen({super.key});
   //final List<Goal> goalData;
@@ -44,41 +38,47 @@ class GoalsScreen extends StatelessWidget {
     );
   }
 
-  void keepGoalAddData(bool validated, String formName, int formGoalType, String formDescription, int targetFromForm) {
-    if (validated) {
-      goalFromForm = Goal(name: formName, goalType: formGoalType, description: formDescription, goalCurrent: 0, goalTarget: targetFromForm);
-    } else {
-      goalFromForm = emptyGoal;
-    }
-  }
-
   void _showAddGoalDialog(BuildContext context) {
+  Map data = {}; //This will hold my data.
+    //And this function edits/adds data to the Map.
+    void saveData(String formField, dynamic formInput){data[formField] = formInput;}
+
+    //This is for processing the data into the database
+    void makeGoal(bool validated, String goalName, int goalType, String description, int goalAmount) {
+      if (validated) {
+        Goal formGoal = Goal(id: 3, name: goalName, goalType: goalType, description: description, goalCurrent: 0, goalTarget: goalAmount);
+
+        var provider = context.read<FinanceProvider>();
+        provider.addNewGoal(formGoal);
+      }
+    }
+
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text('Add New Goal'),
-          content: AddGoalForm(keepingData: keepGoalAddData),
+          content: AddGoalForm(keepingData: saveData),
           actions: <Widget>[
             TextButton(
               child: const Text('Cancel'),
               onPressed: () {
                 Navigator.of(context).pop();
 
-                print(goalFromForm.toString());
-
-                goalFromForm = emptyGoal;
+                //goalFromForm = emptyGoal;
               },
             ),
             TextButton(
               child: const Text('Add'),
               onPressed: () {
-                // Handle adding new goal
-                Navigator.of(context).pop();
+                
+                print('${data['validated']} ${data['goalName']} ${data['goalType']} ${data['description']} ${data['goalAmount']}');
 
                 // Adding to provider
-                var provider = context.read<FinanceProvider>();
-                provider.addNewGoal();
+                makeGoal(data['validated'], data['goalName'], data['goalType'], data['description'], data['goalAmount']);
+
+                // Handle adding new goal
+                Navigator.of(context).pop();
               },
             ),
           ],
@@ -103,10 +103,39 @@ class _AddGoalFormState extends State<AddGoalForm> {
   bool validated = false;
   
   String _goalName = '';
-  String _goalType = 'Saving';
+  int _goalType = 1;
+  String _typeInput = 'Saving';
   String _description = '';
-  int goalAmount = 100;
+  int goalAmount = 0;
 
+  void validate() {
+    if (_goalName.isEmpty || goalAmount == 0) {
+      validated = false;
+    } else {
+      validated = true;
+    }
+  }
+
+  void setGoalType() {
+    if (_typeInput == 'Saving') {
+      _goalType = 1;
+    } else if (_typeInput == 'Investment') {
+      _goalType = 2;
+    } else if (_typeInput == 'Miscellaneous') {
+      _goalType = 3;
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+  
+    widget.keepingData('validated', validated);
+    widget.keepingData('goalName', _goalName);
+    widget.keepingData('goalType', _goalType);
+    widget.keepingData('description', _description);
+    widget.keepingData('goalAmount', goalAmount);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -118,23 +147,19 @@ class _AddGoalFormState extends State<AddGoalForm> {
           TextFormField(
             decoration: const InputDecoration(labelText: 'Goal Name'),
 
-            validator: (value) {
-              if (value!.isEmpty) {
-                validated = false;
+            onChanged: (value) {
+              _goalName = value;
 
-                return 'Please enter a goal name';
-              } else {
-                validated = true;
-              }
-              return null;
-            },
+              validate();
 
-            onSaved: (value) {
-              _goalName = value!;
+              setState(() {
+                widget.keepingData('validated', validated);
+                widget.keepingData('goalName', _goalName);
+                });
             },
           ),
           DropdownButtonFormField<String>(
-            value: _goalType,
+            value: _typeInput,
             items: <String>['Saving', 'Investment', 'Miscellaneous'].map((String value) {
               return DropdownMenuItem<String>(
                 value: value,
@@ -144,22 +169,26 @@ class _AddGoalFormState extends State<AddGoalForm> {
             decoration: const InputDecoration(labelText: 'Goal Type'),
             onChanged: (value) {
               setState(() {
-                _goalType = value!;
+                _typeInput = value!;
+                setGoalType();
+
+                setState(() {widget.keepingData('goalType', _goalType);});
               });
             },
           ),
           TextFormField(
             decoration: const InputDecoration(labelText: 'Description'),
 
-            onSaved: (value) {
-              _description = value!;
+            onChanged: (value) {
+              _description = value;
+              setState(() {widget.keepingData('description', _description);});
             },
           ),
           TextFormField(
             decoration: const InputDecoration(labelText: 'Target Amount'),
             keyboardType: TextInputType.number,
-            onSaved: (value) {
-              int newAmount = int.parse(value!);
+            onChanged: (value) {
+              int newAmount = int.parse(value);
 
               goalAmount = newAmount;
 
@@ -170,6 +199,13 @@ class _AddGoalFormState extends State<AddGoalForm> {
               if (newAmount > 10000) {
                 goalAmount = 10000;
               }
+
+              validate();
+              
+              setState(() {
+                widget.keepingData('validated', validated);
+                widget.keepingData('goalAmount', goalAmount);
+              });
             },
           ),
         ],

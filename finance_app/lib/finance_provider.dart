@@ -90,8 +90,10 @@ class FinanceProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  void addNewGoal() {
-    goals.add(const Goal(id: 2, name: 'Test Goal New', goalType: 1, description: 'Test Goal New', goalCurrent: 80, goalTarget: 670));
+  void addNewGoal(Goal newGoal) {
+    //goals.add(const Goal(id: 2, name: 'Test Goal New', goalType: 1, description: 'Test Goal New', goalCurrent: 80, goalTarget: 670));
+
+    goals.add(newGoal);
 
     notifyListeners();
   }
