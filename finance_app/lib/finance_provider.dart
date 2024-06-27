@@ -122,6 +122,20 @@ class FinanceProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  void deleteGoal(int goalId) {
+    //Get proper goalId first
+    for(var i = 0; i < goals.length; i++){
+      Goal currentGoal = goals[i];
+
+      //check if proper goalId
+      if (currentGoal.id == goalId) {
+        goals.removeAt(i);
+      }
+    }
+
+    notifyListeners();
+  }
+
   void organizeMonths() {
     //They should be organized by months, if all expenses are taken
     

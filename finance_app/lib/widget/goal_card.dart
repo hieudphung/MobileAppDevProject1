@@ -99,7 +99,7 @@ class GoalButtons extends StatelessWidget {
         //This button is for deleting an expense
         Expanded(
               child: IconButton(
-              onPressed: () => {/*_showDeleteGoal(context, goalId)*/}, 
+              onPressed: () => {_showDeleteGoal(context, goalId)}, 
               icon: const Icon(Icons.delete),
         ),),
       ],
@@ -154,6 +154,7 @@ class GoalButtons extends StatelessWidget {
     );
   }
 
+//Goal payment form
 class AddGoalForm extends StatefulWidget {
   const AddGoalForm({super.key,
   required this.keepingData});
@@ -259,6 +260,63 @@ class _AddGoalFormState extends State<AddGoalForm> {
           ),
         ],
       ),
+    );
+  }
+}
+
+//Goal deletion form
+void _showDeleteGoal(BuildContext context, int goalId) {
+    //This is for processing the data into the database
+    void deleteGoal() {
+      var provider = context.read<FinanceProvider>();
+      provider.deleteGoal(goalId);
+    }
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Add New Goal'),
+          content: DeleteGoalForm(),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
+
+                //goalFromForm = emptyGoal;
+              },
+            ),
+            TextButton(
+              child: const Text('Delete'),
+              onPressed: () {
+                deleteGoal();
+
+                // Handle adding new goal
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+}
+
+class DeleteGoalForm extends StatefulWidget {
+  const DeleteGoalForm({super.key});
+
+  @override
+  _DeleteGoalFormState createState() => _DeleteGoalFormState();
+}
+
+class _DeleteGoalFormState extends State<DeleteGoalForm> {
+  @override
+  Widget build(BuildContext context) {
+    return const Column(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          const Text("Are you sure you want to delete this goal?"),
+        ],
     );
   }
 }
