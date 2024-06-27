@@ -83,7 +83,7 @@ class _MyHomePageState extends State<MyHomePage> {
             label: 'Goals',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.money),
+            icon: Icon(Icons.chart-line),
             label: 'Spending',
           ),
         ],

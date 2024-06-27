@@ -182,7 +182,7 @@ class _TestExpensePageState extends State<TestPage> {
             ),),
                 Expanded(child: FloatingActionButton(
               onPressed: () => updateGoalButton(goals[index].id!, goals[index].name, goals[index].goalCurrent, goals[index].description, goals[index].goalCurrent, goals[index].goalTarget),
-              child: const Icon(Icons.money),
+              child: const Icon(Icons.add_card),
             ),)
               ]
             )
