@@ -3,7 +3,7 @@ import '../database/finance_tables.dart';
 import '../model/expense.dart';
 import '../model/goal.dart';
 
-import '../widget/expense_card.dart';
+//import '../widget/expense_card.dart';
 import '../widget/goal_card.dart';
 
 class TestPage extends StatefulWidget {
@@ -42,8 +42,9 @@ class _TestExpensePageState extends State<TestPage> {
     //expenses = await FinanceDatabase.instance.filterExpenses(0, 6);
   }
 
+
   void addGoal() async {
-    const newGoal = Goal (
+    Goal newGoal = Goal (
       name: "Test Goal 2",
       goalType: 2,
       description: "This is another test goal!",

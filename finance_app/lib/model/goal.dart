@@ -17,10 +17,10 @@ class Goal {
   final String name;    //NOTE: isExpense is an integer, but is functionally supposed to be a boolean, just SQL doesn't take bool
   final int goalType;
   final String description;
-  final int goalCurrent;
+  int goalCurrent;
   final int goalTarget;
 
-  const Goal({
+  Goal({
     this.id,
     required this.name,
     required this.goalType,

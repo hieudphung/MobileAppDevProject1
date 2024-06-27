@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../finance_provider.dart';
 
 // import '../database/finance_tables.dart';
 import '../model/goal.dart';
@@ -89,17 +92,173 @@ class GoalButtons extends StatelessWidget {
         //This button is for adding payments to the goal
         Expanded(
               child: IconButton(
-              onPressed: () => {print(goalId)}, 
+              onPressed: () => {_showPayGoalDialog(context, goalId)}, 
               icon: const Icon(Icons.arrow_forward),
         ),),
 
         //This button is for deleting an expense
         Expanded(
               child: IconButton(
-              onPressed: () => {print(goalId)}, 
+              onPressed: () => {/*_showDeleteGoal(context, goalId)*/}, 
               icon: const Icon(Icons.delete),
         ),),
       ],
+    );
+  }
+}
+
+
+
+  void _showPayGoalDialog(BuildContext context, int goalId) {
+  Map data = {}; //This will hold my data.
+    //And this function edits/adds data to the Map.
+    void saveData(String formField, dynamic formInput){data[formField] = formInput;}
+
+    //This is for processing the data into the database
+    void makeGoal(bool validated, int month, int amountToPay) {
+      if (validated) {
+        //Goal formGoal = Goal(id: 3, name: goalName, goalType: goalType, description: description, goalCurrent: 0, goalTarget: goalAmount);
+      
+        var provider = context.read<FinanceProvider>();
+        provider.payForGoal(goalId, month, amountToPay);
+      }
+    }
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Add New Goal'),
+          content: AddGoalForm(keepingData: saveData),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
+
+                //goalFromForm = emptyGoal;
+              },
+            ),
+            TextButton(
+              child: const Text('Add'),
+              onPressed: () {
+                makeGoal(data['validated'], data['month'], data['goalPay']);
+
+                // Handle adding new goal
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+class AddGoalForm extends StatefulWidget {
+  const AddGoalForm({super.key,
+  required this.keepingData});
+
+  final Function keepingData;
+
+  @override
+  _AddGoalFormState createState() => _AddGoalFormState();
+}
+
+class _AddGoalFormState extends State<AddGoalForm> {
+  final _formKey = GlobalKey<FormState>();
+  bool validated = false;
+  
+  String _monthName = 'January';
+  int month = 1;
+  
+  int goalPay = 0;
+
+  void validate() {
+    if (goalPay < 1) {
+      validated = false;
+    } else {
+      validated = true;
+    }
+  }
+
+  void setMonthType() {
+    if (_monthName == 'January') {
+      month = 1;
+    } else if (_monthName == 'February') {
+      month = 2;
+    } else if (_monthName == 'March') {
+      month = 3;
+    } else if (_monthName == 'April') {
+      month = 4;
+    } else if (_monthName == 'May') {
+      month = 5;
+    } else if (_monthName == 'June') {
+      month = 6;
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+  
+    widget.keepingData('validated', validated);
+    widget.keepingData('month', month);
+    widget.keepingData('goalPay', goalPay);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Form(
+      key: _formKey,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+
+          DropdownButtonFormField<String>(
+            value: _monthName,
+            items: <String>['January', 'February', 'March', 'April', 'May', 'June'].map((String value) {
+              return DropdownMenuItem<String>(
+                value: value,
+                child: Text(value),
+              );
+            }).toList(),
+            decoration: const InputDecoration(labelText: 'Month'),
+            onChanged: (value) {
+              setState(() {
+                _monthName = value!;
+                setMonthType();
+
+                setState(() {widget.keepingData('month', month);});
+              });
+            },
+          ),
+
+          TextFormField(
+            decoration: const InputDecoration(labelText: 'Target Amount'),
+            keyboardType: TextInputType.number,
+            onChanged: (value) {
+              int newAmount = int.parse(value);
+
+              goalPay = newAmount;
+
+              if (newAmount < 0) {
+                goalPay = 0;
+              }
+
+              if (newAmount > 10000) {
+                goalPay = 10000;
+              }
+
+              validate();
+              
+              setState(() {
+                widget.keepingData('validated', validated);
+                widget.keepingData('goalPay', goalPay);
+              });
+            },
+          ),
+        ],
+      ),
     );
   }
 }

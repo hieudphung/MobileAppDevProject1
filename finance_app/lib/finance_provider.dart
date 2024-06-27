@@ -83,9 +83,9 @@ class FinanceProvider with ChangeNotifier {
   }
 
   void addBaseGoal() {
-    goals.add(const Goal(id: 0, name: 'Test Goal One', goalType: 1, description: 'Test Goal One', goalCurrent: 0, goalTarget: 600));
-    goals.add(const Goal(id: 1, name: 'Test Goal Two', goalType: 1, description: 'Test Goal Two', goalCurrent: 520, goalTarget: 800));
-    goals.add(const Goal(id: 2, name: 'Test Goal Three', goalType: 1, description: 'Test Goal Three', goalCurrent: 150, goalTarget: 500));
+    goals.add(Goal(id: 0, name: 'Test Goal One', goalType: 1, description: 'Test Goal One', goalCurrent: 0, goalTarget: 600));
+    goals.add(Goal(id: 1, name: 'Test Goal Two', goalType: 1, description: 'Test Goal Two', goalCurrent: 520, goalTarget: 800));
+    goals.add(Goal(id: 2, name: 'Test Goal Three', goalType: 1, description: 'Test Goal Three', goalCurrent: 150, goalTarget: 500));
 
     notifyListeners();
   }
@@ -94,6 +94,30 @@ class FinanceProvider with ChangeNotifier {
     //goals.add(const Goal(id: 2, name: 'Test Goal New', goalType: 1, description: 'Test Goal New', goalCurrent: 80, goalTarget: 670));
 
     goals.add(newGoal);
+
+    notifyListeners();
+  }
+
+  void payForGoal(int goalId, int month, int goalPay) {
+    //Get proper goalId first
+    for(var i = 0; i < goals.length; i++){
+      Goal currentGoal = goals[i];
+
+      //check if proper goalId
+      if (currentGoal.id == goalId) {
+        //See if goal has reached its limit if adding goal pay
+        int targetDifference = currentGoal.goalTarget - currentGoal.goalCurrent;
+        int actualPayment = goalPay;
+
+        //paying only as much as needed
+        if (targetDifference < goalPay) {
+          actualPayment = targetDifference;
+        }
+
+        //finally updating
+        goals[i].goalCurrent = goals[i].goalCurrent + actualPayment;
+      }
+    }
 
     notifyListeners();
   }
@@ -118,4 +142,5 @@ class FinanceProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  
 }
