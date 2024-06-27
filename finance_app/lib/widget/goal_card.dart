@@ -94,11 +94,14 @@ class GoalButtons extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: <Widget>[
+        //This button is for adding payments to the goal
         Expanded(
               child: IconButton(
               onPressed: () => {print(goalId)}, 
               icon: const Icon(Icons.arrow_forward),
         ),),
+
+        //This button is for deleting an expense
         Expanded(
               child: IconButton(
               onPressed: () => {print(goalId)}, 
