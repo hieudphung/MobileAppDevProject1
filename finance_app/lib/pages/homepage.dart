@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../database/finance_tables.dart';
+
 import '../pages/goalpage.dart';
 import '../pages/spendpage.dart';
 
@@ -7,20 +9,61 @@ import './random_tips_page.dart';
 import './recent_goals_page.dart';
 import './recent_transactions_page.dart';
 
-import '../widget/section_card.dart';
+import '../model/expense.dart';
+import '../model/goal.dart';
 
 class HomePage extends StatefulWidget {
-
   @override
   _HomePageState createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
+
   int _selectedIndex = 0;
 
-  static List<Widget> _widgetOptions(BuildContext context) => <Widget>[
+  //For getting stuff from the database
+  List<Expense> expenses = List.empty(growable: true);
+  List<Goal> goals = List.empty(growable: true);
+
+  //Here is just getting a bunch of stuff from the database for later
+  void getExpenses() async {
+    expenses = await FinanceDatabase.instance.expenses();
+  
+    //expenses = await FinanceDatabase.instance.filterExpenses(0, 6);
+  }
+
+  /*
+  void getGoals() async {
+    goals = await FinanceDatabase.instance.goals();
+  }
+  */
+
+  //placeholder data for goals
+  
+  void getGoals() {
+    goals.add(const Goal(id: 0, name: 'Test Goal One', goalType: 1, description: 'Test Goal One', goalCurrent: 0, goalTarget: 600));
+    goals.add(const Goal(id: 1, name: 'Test Goal Two', goalType: 1, description: 'Test Goal Two', goalCurrent: 520, goalTarget: 800));
+    goals.add(const Goal(id: 2, name: 'Test Goal Three', goalType: 1, description: 'Test Goal Three', goalCurrent: 150, goalTarget: 500));
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    getExpenses();
+    getGoals();
+  }
+
+  @override
+  void dispose() {
+    FinanceDatabase.instance.close();
+
+    super.dispose();
+  }
+
+  List<Widget> _widgetOptions(BuildContext context) => <Widget>[
     HomeScreen(),
-    GoalsScreen(),
+    GoalsScreen(goalData: goals),
     SpendingScreen(),
   ];
 
@@ -109,12 +152,16 @@ class HomeScreen extends StatelessWidget {
   }
 }
 
+// Would put in separate file, but only really needed to separate home page content
 class SectionCard extends StatelessWidget {
+  const SectionCard({super.key,
+    required this.title, 
+    required this.onTap, 
+    required this.color});
+
   final String title;
   final VoidCallback onTap;
   final Color color;
-
-  SectionCard({required this.title, required this.onTap, required this.color});
 
   @override
   Widget build(BuildContext context) {

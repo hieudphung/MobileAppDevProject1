@@ -1,10 +1,21 @@
 import 'package:flutter/material.dart';
 
+import '../database/finance_tables.dart';
+
+import '../model/goal.dart';
+import '../widget/goal_card.dart';
+
 class GoalsScreen extends StatelessWidget {
+  const GoalsScreen({super.key,
+    required this.goalData,
+  });
+
+  final List<Goal> goalData;
+
   @override
   Widget build(BuildContext context) {
     return Column(
-      children: [
+      children: <Widget>[
         ListTile(
           title: Text('Finance Goals'),
           trailing: IconButton(
@@ -14,14 +25,26 @@ class GoalsScreen extends StatelessWidget {
             },
           ),
         ),
+
+        /*
         Expanded(
           child: ListView.builder(
-            itemCount: 10, // replace with your goals count
+            itemCount: goalData.length, // replace with your goals count
             itemBuilder: (context, index) {
               return GoalCard();
             },
           ),
         ),
+        */
+
+        Flexible(
+          child: 
+              ListView.builder(
+          itemCount: goalData.length,
+          itemBuilder: (_,int index) => GoalCard(goalId: goalData[index].id!, name: goalData[index].name, goalType: goalData[index].goalType, goalCurrent: goalData[index].goalCurrent, goalTarget: goalData[index].goalTarget),
+            ),
+        )
+        //*/
       ],
     );
   }
@@ -54,6 +77,7 @@ class GoalsScreen extends StatelessWidget {
   }
 }
 
+/*
 class GoalCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -72,6 +96,7 @@ class GoalCard extends StatelessWidget {
     );
   }
 }
+*/
 
 class AddGoalForm extends StatefulWidget {
   @override
@@ -83,6 +108,7 @@ class _AddGoalFormState extends State<AddGoalForm> {
   String _goalName = '';
   String _goalType = 'Saving';
   String _description = '';
+  int goalAmount = 100;
 
   @override
   Widget build(BuildContext context) {
@@ -122,6 +148,23 @@ class _AddGoalFormState extends State<AddGoalForm> {
             decoration: InputDecoration(labelText: 'Description'),
             onSaved: (value) {
               _description = value!;
+            },
+          ),
+          TextFormField(
+            decoration: InputDecoration(labelText: 'Target Amount'),
+            keyboardType: TextInputType.number,
+            onSaved: (value) {
+              int newAmount = int.parse(value!);
+
+              goalAmount = newAmount;
+
+              if (newAmount < 100) {
+                goalAmount = 100;
+              }
+
+              if (newAmount > 10000) {
+                goalAmount = 10000;
+              }
             },
           ),
         ],
