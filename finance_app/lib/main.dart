@@ -1,35 +1,33 @@
 import 'package:flutter/material.dart';
 //import '../pages/test_expense_page.dart';
 
- import 'package:fl_chart/fl_chart.dart';
-import 'expense.dart';
-import 'recent_transactions_page.dart';
-import 'recent_goals_page.dart';
-import 'random_tips_page.dart';
 import '../pages/homepage.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   runApp(const FinanceApp());
+}
 
 class FinanceApp extends StatelessWidget {
   const FinanceApp({super.key});
 
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Finance Tracker',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-        scaffoldBackgroundColor: Colors.blueGrey[300], // Change the background color here
-      ),
-      home: const MyHomePage(),
-    );
+    @override
+    Widget build(BuildContext context) {
+      return MaterialApp(
+        title: 'Finance Tracker',
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+          useMaterial3: true,
+          scaffoldBackgroundColor: Colors.blueGrey[300], // Change the background color here
+        ),
+        home: HomePage(),
+      );
   }
 }
 
+
+/*
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
 
@@ -101,46 +99,5 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 }
-class HomeScreen extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Column(
-        children: [
-          SectionCard(
-            title: 'Recent Spending / Income',
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => RecentTransactionsPage()),
-              );
-            },
-            color: Colors.blueGrey, // Example color for Recent Spending / Income
-          ),
-          SectionCard(
-            title: 'Recent Goals',
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => RecentGoalsPage()),
-              );
-            },
-            color: Colors.blueGrey, // Example color for Recent Goals
-          ),
-          SectionCard(
-            title: 'Random Tips',
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => RandomTipsPage()),
-              );
-            },
-            color: Colors.blueGrey, // Example color for Random Tips
-          ),
-        ],
-      ),
-    );
-  }
-}
 
-
+*/
