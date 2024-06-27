@@ -65,4 +65,3 @@ class Goal {
       "goalTarget": goalTarget
   };
 }
-
