@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:fl_chart/fl_chart.dart';
+//import 'package:fl_chart/fl_chart.dart';
+import 'package:provider/provider.dart';
+
+import '../finance_provider.dart';
 
 import '../widget/expense_card.dart';
 
@@ -7,10 +10,10 @@ import '../model/month_data.dart';
 
 class SpendingScreen extends StatelessWidget {
   const SpendingScreen({super.key, 
-    required this.monthDatasets
+    //required this.monthDatasets
   });
 
-  final List<MonthData> monthDatasets;
+  //final List<MonthData> monthDatasets;
 
   void _addExpenditure(Expenditure expenditure) {
     //setState(() {
@@ -30,10 +33,13 @@ class SpendingScreen extends StatelessWidget {
         ),
         Flexible(
           child: 
-              ListView.builder(
-          itemCount: monthDatasets.length,
-          itemBuilder: (_,int index) => ExpenseCard(monthDataset: monthDatasets[index]),
+              Consumer<FinanceProvider>(
+                builder: (context, provider, child) =>
+                ListView.builder(
+          itemCount: provider.monthDatasets.length,
+          itemBuilder: (_,int index) => ExpenseCard(monthDataset: provider.monthDatasets.elementAt(index)),
             ),
+          )
         )
       ],
     );

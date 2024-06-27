@@ -1,50 +1,41 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
-import '../database/finance_tables.dart';
+import '../finance_provider.dart';
 
-import '../model/goal.dart';
 import '../widget/goal_card.dart';
 
 class GoalsScreen extends StatelessWidget {
   const GoalsScreen({super.key,
-    required this.goalData,
+    //required this.goalData,
   });
 
-  final List<Goal> goalData;
+  //final List<Goal> goalData;
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: <Widget>[
         ListTile(
-          title: Text('Finance Goals'),
+          title: const Text('Finance Goals'),
           trailing: IconButton(
-            icon: Icon(Icons.add),
+            icon: const Icon(Icons.add),
             onPressed: () {
               _showAddGoalDialog(context);
             },
           ),
         ),
 
-        /*
-        Expanded(
-          child: ListView.builder(
-            itemCount: goalData.length, // replace with your goals count
-            itemBuilder: (context, index) {
-              return GoalCard();
-            },
-          ),
-        ),
-        */
-
         Flexible(
           child: 
-              ListView.builder(
-          itemCount: goalData.length,
-          itemBuilder: (_,int index) => GoalCard(goalUsed: goalData[index]),
-            ),
-        )
-        //*/
+                Consumer<FinanceProvider>(
+                builder: (context, provider, child) =>
+                ListView.builder(
+            itemCount: provider.goals.length,
+            itemBuilder: (_,int index) => GoalCard(goalUsed: provider.goals.elementAt(index)),
+              ),
+          )
+        )//*/
       ],
     );
   }
@@ -54,20 +45,23 @@ class GoalsScreen extends StatelessWidget {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Add New Goal'),
+          title: const Text('Add New Goal'),
           content: AddGoalForm(),
           actions: <Widget>[
             TextButton(
-              child: Text('Cancel'),
+              child: const Text('Cancel'),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
             TextButton(
-              child: Text('Add'),
+              child: const Text('Add'),
               onPressed: () {
                 // Handle adding new goal
                 Navigator.of(context).pop();
+
+                var provider = context.read<FinanceProvider>();
+                provider.addNewGoal();
               },
             ),
           ],
@@ -77,27 +71,6 @@ class GoalsScreen extends StatelessWidget {
   }
 }
 
-/*
-class GoalCard extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      margin: EdgeInsets.all(10.0),
-      child: ListTile(
-        title: Text('Goal Name'),
-        subtitle: Text('Total Amount: \$1000'),
-        trailing: TextButton(
-          child: Text('Pay'),
-          onPressed: () {
-            // Handle pay towards goal
-          },
-        ),
-      ),
-    );
-  }
-}
-*/
-
 class AddGoalForm extends StatefulWidget {
   @override
   _AddGoalFormState createState() => _AddGoalFormState();
@@ -105,10 +78,12 @@ class AddGoalForm extends StatefulWidget {
 
 class _AddGoalFormState extends State<AddGoalForm> {
   final _formKey = GlobalKey<FormState>();
+
   String _goalName = '';
   String _goalType = 'Saving';
   String _description = '';
   int goalAmount = 100;
+
 
   @override
   Widget build(BuildContext context) {
@@ -118,13 +93,15 @@ class _AddGoalFormState extends State<AddGoalForm> {
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           TextFormField(
-            decoration: InputDecoration(labelText: 'Goal Name'),
+            decoration: const InputDecoration(labelText: 'Goal Name'),
+            /*
             validator: (value) {
               if (value!.isEmpty) {
                 return 'Please enter a goal name';
               }
               return null;
             },
+            */
             onSaved: (value) {
               _goalName = value!;
             },
@@ -137,7 +114,7 @@ class _AddGoalFormState extends State<AddGoalForm> {
                 child: Text(value),
               );
             }).toList(),
-            decoration: InputDecoration(labelText: 'Goal Type'),
+            decoration: const InputDecoration(labelText: 'Goal Type'),
             onChanged: (value) {
               setState(() {
                 _goalType = value!;
@@ -145,13 +122,13 @@ class _AddGoalFormState extends State<AddGoalForm> {
             },
           ),
           TextFormField(
-            decoration: InputDecoration(labelText: 'Description'),
+            decoration: const InputDecoration(labelText: 'Description'),
             onSaved: (value) {
               _description = value!;
             },
           ),
           TextFormField(
-            decoration: InputDecoration(labelText: 'Target Amount'),
+            decoration: const InputDecoration(labelText: 'Target Amount'),
             keyboardType: TextInputType.number,
             onSaved: (value) {
               int newAmount = int.parse(value!);
