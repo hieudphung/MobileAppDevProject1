@@ -1,36 +1,28 @@
 import 'package:flutter/material.dart';
 
 // import '../database/finance_tables.dart';
-// import '../model/goal.dart';
+import '../model/goal.dart';
 
 //This is the main card for goal
 
 class GoalCard extends StatelessWidget {
   const GoalCard({super.key,
-    required this.goalId,
-    required this.name,
-    required this.goalType,
-    required this.goalCurrent,
-    required this.goalTarget,
+    required this.goalUsed,
   });
 
-  final int goalId;
-  final String name;
-  final int goalType;
-  final int goalCurrent;
-  final int goalTarget;
+  final Goal goalUsed;
 
   @override
   Widget build(BuildContext context) {
-    double currentDouble = goalCurrent.toDouble();
-    double targetDouble = goalTarget.toDouble();
+    double currentDouble = goalUsed.goalCurrent.toDouble();
+    double targetDouble = goalUsed.goalTarget.toDouble();
 
     return Card (
       child: Column(
         children: <Widget>[
-          GoalHead(cardTitle: name, currentAmount: goalCurrent, targetAmount: goalTarget),
+          GoalHead(cardTitle: goalUsed.name, currentAmount: goalUsed.goalCurrent, targetAmount: goalUsed.goalTarget),
           GoalBar(goalBar: currentDouble/targetDouble),
-          GoalButtons(goalId: goalId),
+          GoalButtons(goalId: goalUsed.id!),
         ]
       )
     );

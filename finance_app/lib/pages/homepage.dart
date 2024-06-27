@@ -11,6 +11,7 @@ import './recent_transactions_page.dart';
 
 import '../model/expense.dart';
 import '../model/goal.dart';
+import '../model/month_data.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -23,13 +24,79 @@ class _HomePageState extends State<HomePage> {
 
   //For getting stuff from the database
   List<Expense> expenses = List.empty(growable: true);
+  List<MonthData> monthDatasets = List.empty(growable: true);
   List<Goal> goals = List.empty(growable: true);
 
   //Here is just getting a bunch of stuff from the database for later
+
+  /*
   void getExpenses() async {
     expenses = await FinanceDatabase.instance.expenses();
   
     //expenses = await FinanceDatabase.instance.filterExpenses(0, 6);
+  }
+  */
+
+  void getExpenses() {
+    monthDatasets.add(
+      const MonthData(
+        monthNumber: 6,
+        totalExpense: 150,
+        expenseDataset: { "Expense A": 7, "Expense B": 2, "Expense C": 3 },
+        totalIncome: 300,
+        incomeDataset: { "Expense A": 4, "Expense B": 6, "Expense C": 9 }
+      ),
+    );
+
+    monthDatasets.add(
+      const MonthData(
+        monthNumber: 5,
+        totalExpense: 150,
+        expenseDataset: { "Expense A": 7, "Expense B": 2, "Expense C": 3 },
+        totalIncome: 300,
+        incomeDataset: { "Expense A": 4, "Expense B": 6, "Expense C": 9 }
+      ),
+    );
+
+    monthDatasets.add(
+      const MonthData(
+        monthNumber: 4,
+        totalExpense: 150,
+        expenseDataset: { "Expense A": 7, "Expense B": 2, "Expense C": 3 },
+        totalIncome: 300,
+        incomeDataset: { "Expense A": 4, "Expense B": 6, "Expense C": 9 }
+      ),
+    );
+
+    monthDatasets.add(
+      const MonthData(
+        monthNumber: 3,
+        totalExpense: 150,
+        expenseDataset: { "Expense A": 7, "Expense B": 2, "Expense C": 3 },
+        totalIncome: 300,
+        incomeDataset: { "Expense A": 4, "Expense B": 6, "Expense C": 9 }
+      ),
+    );
+
+    monthDatasets.add(
+      const MonthData(
+        monthNumber: 2,
+        totalExpense: 150,
+        expenseDataset: { "Expense A": 7, "Expense B": 2, "Expense C": 3 },
+        totalIncome: 300,
+        incomeDataset: { "Expense A": 4, "Expense B": 6, "Expense C": 9 }
+      ),
+    );
+
+    monthDatasets.add(
+      const MonthData(
+        monthNumber: 1,
+        totalExpense: 150,
+        expenseDataset: { "Expense A": 7, "Expense B": 2, "Expense C": 3 },
+        totalIncome: 300,
+        incomeDataset: { "Expense A": 4, "Expense B": 6, "Expense C": 9 }
+      ),
+    );
   }
 
   /*
@@ -64,7 +131,7 @@ class _HomePageState extends State<HomePage> {
   List<Widget> _widgetOptions(BuildContext context) => <Widget>[
     HomeScreen(),
     GoalsScreen(goalData: goals),
-    SpendingScreen(),
+    SpendingScreen(monthDatasets: monthDatasets),
   ];
 
   void _onItemTapped(int index) {

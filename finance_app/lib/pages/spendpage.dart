@@ -1,46 +1,40 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 
-class SpendingScreen extends StatefulWidget {
-  @override
-  _SpendingScreenState createState() => _SpendingScreenState();
-}
+import '../widget/expense_card.dart';
 
-class _SpendingScreenState extends State<SpendingScreen> {
-  List<Expenditure> _expenditures = [];
+import '../model/month_data.dart';
+
+class SpendingScreen extends StatelessWidget {
+  const SpendingScreen({super.key, 
+    required this.monthDatasets
+  });
+
+  final List<MonthData> monthDatasets;
 
   void _addExpenditure(Expenditure expenditure) {
-    setState(() {
-      _expenditures.add(expenditure);
-    });
+    //setState(() {
+    //  _expenditures.add(expenditure);
+    //});
   }
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        ListTile(
-          title: Text('Spending by Month'),
-        ),
-        Expanded(
-          child: PieChart(
-            PieChartData(
-              sections: _expenditures
-                  .map((e) => PieChartSectionData(
-                value: e.amount,
-                title: '${e.type}: \$${e.amount.toStringAsFixed(2)}',
-                color: e.color,
-              ))
-                  .toList(),
-            ),
-          ),
-        ),
         ElevatedButton(
           onPressed: () {
             _showAddExpenditureDialog(context);
           },
           child: Text('Add Expenditure'),
         ),
+        Flexible(
+          child: 
+              ListView.builder(
+          itemCount: monthDatasets.length,
+          itemBuilder: (_,int index) => ExpenseCard(monthDataset: monthDatasets[index]),
+            ),
+        )
       ],
     );
   }

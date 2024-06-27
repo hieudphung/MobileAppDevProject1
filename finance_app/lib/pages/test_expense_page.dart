@@ -135,7 +135,7 @@ class _TestExpensePageState extends State<TestPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            const ExpenseCard(monthNumber: 6),
+            //const ExpenseCard(monthNumber: 6),
             //const GoalCard(),
             /*
             Text(
@@ -147,7 +147,7 @@ class _TestExpensePageState extends State<TestPage> {
               child: 
               ListView.builder(
           itemCount: goals.length,
-          itemBuilder: (_,int index) => GoalCard(goalId: goals[index].id!, name: goals[index].name, goalType: goals[index].goalType, goalCurrent: goals[index].goalCurrent, goalTarget: goals[index].goalTarget),
+          itemBuilder: (_,int index) => GoalCard(goalUsed: goals[index]),
             ),),
             Flexible (
               child: 

@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:pie_chart/pie_chart.dart';
 
 // import '../database/finance_tables.dart';
-// import '../model/expense.dart';
+
+import '../model/month_data.dart';
 
 import '../common/common.dart';
 
@@ -38,28 +39,37 @@ final gradientForIncome = <List<Color>> [
 
 class ExpenseCard extends StatelessWidget {
   const ExpenseCard({super.key, 
-    required this.monthNumber,
+    required this.monthDataset,
   });
   
-  final int monthNumber;
+  final MonthData monthDataset;
 
   @override
   Widget build(BuildContext context) {
     //Decide on a title first
-    String cardTitle = getMonth(monthNumber);
+    String cardTitle = getMonth(monthDataset.monthNumber);
+
+    /*
+    Keeping as reference for parameters sent
 
     Map<String, double> dataTest = {
       "Expense A": 4,
       "Expense B": 6,
       "Expense C": 9
     };
+    */
 
     
     return Card (
       child: Column(
         children: <Widget>[
           ExpenseHead(cardTitle: cardTitle),
-          ExpenseBody(monthNumber: monthNumber, totalExpense: 200, expenseDataset: dataTest, totalIncome: 300, incomeDataset: dataTest),
+          ExpenseBody(
+            monthNumber: monthDataset.monthNumber, 
+            totalExpense: monthDataset.totalExpense, 
+            expenseDataset: monthDataset.expenseDataset, 
+            totalIncome: monthDataset.totalIncome, 
+            incomeDataset: monthDataset.incomeDataset),
         ]
       )
     );

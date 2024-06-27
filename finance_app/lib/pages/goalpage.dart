@@ -41,7 +41,7 @@ class GoalsScreen extends StatelessWidget {
           child: 
               ListView.builder(
           itemCount: goalData.length,
-          itemBuilder: (_,int index) => GoalCard(goalId: goalData[index].id!, name: goalData[index].name, goalType: goalData[index].goalType, goalCurrent: goalData[index].goalCurrent, goalTarget: goalData[index].goalTarget),
+          itemBuilder: (_,int index) => GoalCard(goalUsed: goalData[index]),
             ),
         )
         //*/
