@@ -7,6 +7,19 @@ import '../model/goal.dart';
 import '../model/month_data.dart';
 
 class FinanceProvider with ChangeNotifier {
+  FinanceProvider () {
+    //Getting the data already
+    addBaseExpenses();
+    addBaseGoal();
+  }
+
+  @override
+  void dispose() {
+    FinanceDatabase.instance.close();
+
+    super.dispose();
+  }
+
   /*
   This is for managing the backend, where certain elements in the program will listen to this.
   It's also meant to keep returned data from the database in a consistent place, as it gets passed around.
@@ -19,65 +32,32 @@ class FinanceProvider with ChangeNotifier {
 
   // more dummy testing
   void addBaseExpenses() {
-    monthDatasets.add(
-      const MonthData(
-        monthNumber: 6,
-        totalExpense: 150,
-        expenseDataset: { "Expense A": 7, "Expense B": 2, "Expense C": 3 },
-        totalIncome: 300,
-        incomeDataset: { "Expense A": 4, "Expense B": 6, "Expense C": 9 }
-      ),
-    );
 
-    monthDatasets.add(
-      const MonthData(
-        monthNumber: 5,
-        totalExpense: 150,
-        expenseDataset: { "Expense A": 7, "Expense B": 2 },
-        totalIncome: 300,
-        incomeDataset: { "Expense A": 4, "Expense B": 6, "Expense C": 9 }
-      ),
-    );
+    expenses.add(const Expense(id: 0, isExpense: 1, cost: 70, expenseType: 1, linkedGoal: 0, month: 6));
+    expenses.add(const Expense(id: 1, isExpense: 1, cost: 20, expenseType: 2, linkedGoal: 0, month: 6));
+    expenses.add(const Expense(id: 2, isExpense: 1, cost: 30, expenseType: 3, linkedGoal: 0, month: 6));
+    expenses.add(const Expense(id: 3, isExpense: 1, cost: 40, expenseType: 4, linkedGoal: 1, month: 6));
 
-    monthDatasets.add(
-      const MonthData(
-        monthNumber: 4,
-        totalExpense: 150,
-        expenseDataset: { "Expense A": 7, "Expense B": 2, "Expense C": 3 },
-        totalIncome: 300,
-        incomeDataset: { "Expense A": 4 }
-      ),
-    );
+    expenses.add(const Expense(id: 4, isExpense: 2, cost: 40, expenseType: 1, linkedGoal: 0, month: 6));
+    expenses.add(const Expense(id: 5, isExpense: 2, cost: 60, expenseType: 2, linkedGoal: 0, month: 6));
+    expenses.add(const Expense(id: 6, isExpense: 2, cost: 80, expenseType: 3, linkedGoal: 0, month: 6));
 
-    monthDatasets.add(
-      const MonthData(
-        monthNumber: 3,
-        totalExpense: 150,
-        expenseDataset: { "None" : 0 },
-        totalIncome: 300,
-        incomeDataset: { "Expense A": 4, "Expense B": 6, "Expense C": 9 }
-      ),
-    );
+    expenses.add(const Expense(id: 7, isExpense: 1, cost: 70, expenseType: 1, linkedGoal: 0, month: 5));
+    expenses.add(const Expense(id: 8, isExpense: 1, cost: 20, expenseType: 2, linkedGoal: 0, month: 5));
+    expenses.add(const Expense(id: 9, isExpense: 1, cost: 30, expenseType: 3, linkedGoal: 0, month: 5));
 
-    monthDatasets.add(
-      const MonthData(
-        monthNumber: 2,
-        totalExpense: 150,
-        expenseDataset: { "Expense A": 7, "Expense B": 2, "Expense C": 3 },
-        totalIncome: 300,
-        incomeDataset: { "Expense A": 4, "Expense B": 6, "Expense C": 9 }
-      ),
-    );
+    expenses.add(const Expense(id: 10, isExpense: 2, cost: 40, expenseType: 1, linkedGoal: 0, month: 5));
+    expenses.add(const Expense(id: 11, isExpense: 2, cost: 80, expenseType: 3, linkedGoal: 0, month: 5));
 
-    monthDatasets.add(
-      const MonthData(
-        monthNumber: 1,
-        totalExpense: 150,
-        expenseDataset: { "Expense A": 7, "Expense B": 2, "Expense C": 3 },
-        totalIncome: 300,
-        incomeDataset: { "Expense A": 4, "Expense B": 6, "Expense C": 9 }
-      ),
-    );
+    organizeMonths();
+
+    notifyListeners();
+  }
+
+  void addExpense(int month, int isExpense, int expenseType, int amountToPay) {
+    expenses.add(Expense(id: expenses.length, isExpense: isExpense, cost: amountToPay, expenseType: expenseType, linkedGoal: 0, month: month));
+
+    organizeMonths();
 
     notifyListeners();
   }
@@ -137,8 +117,67 @@ class FinanceProvider with ChangeNotifier {
   }
 
   void organizeMonths() {
+    //Reset the months first
+    monthDatasets = List.empty(growable: true);
+
     //They should be organized by months, if all expenses are taken
     
+    //Iterate by available months
+    for (var month = 6; month > 0; month--) {
+      //bins for expenses
+      double totalGroceries = 0;
+      double totalInsurance = 0;
+      double totalBills = 0;
+      double totalGoalpays = 0;
+
+      double totalIncome = 0;
+      double totalExtraIncome = 0;
+
+      //Not efficient, but gets it done
+      for (var i = 0; i < expenses.length; i++) {
+        Expense currentExpense = expenses[i];
+
+        //See if it's in the same month
+        if (currentExpense.month == month) {
+          //Determine if expense or income
+          //Not a bool for storage sake, but effectively just seeing if true
+          if (currentExpense.isExpense == 1) {
+            switch (currentExpense.expenseType) {
+              case 1:
+                totalGroceries += currentExpense.cost;
+              case 2:
+                totalInsurance += currentExpense.cost;
+              case 3:
+                totalBills += currentExpense.cost;
+              case 4:
+                totalGoalpays += currentExpense.cost;
+              default:
+                totalGroceries += currentExpense.cost;
+            }
+          } else {
+            switch (currentExpense.expenseType) {
+              case 1:
+                totalIncome += currentExpense.cost;
+              default:
+                totalExtraIncome += currentExpense.cost;
+            }
+          }
+        }
+      }
+
+      int intTotalExpense = (totalGroceries + totalInsurance + totalBills + totalGoalpays).round();
+      int intTotalIncome = (totalIncome + totalExtraIncome).round();
+
+      monthDatasets.add(
+        MonthData(
+          monthNumber: month,
+          totalExpense: intTotalExpense,
+          expenseDataset: { 'Groceries': totalGroceries , 'Insurance': totalInsurance , 'Bills': totalBills , 'Goal Pay' : totalGoalpays},
+          totalIncome: intTotalIncome,
+          incomeDataset: { 'Income': totalIncome, 'Extra Income': totalExtraIncome }
+        ),
+      );
+    }
   }
 
   //These are the real functions

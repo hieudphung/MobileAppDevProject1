@@ -1,9 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-
-import '../finance_provider.dart';
-
-import '../database/finance_tables.dart';
 
 import '../pages/goalpage.dart';
 import '../pages/spendpage.dart';
@@ -23,32 +18,13 @@ class _HomePageState extends State<HomePage> {
 
   //Stuff from database in Finance Provider
 
+  /*
   void getExpenses() {
     var provider = context.read<FinanceProvider>();
     provider.addBaseExpenses();
   }
-  
-  //placeholder data for goals
-  
-  void getGoals() {
-    var provider = context.read<FinanceProvider>();
-    provider.addBaseGoal();
-  }
+  */
 
-  @override
-  void initState() {
-    super.initState();
-
-    getExpenses();
-    getGoals();
-  }
-
-  @override
-  void dispose() {
-    FinanceDatabase.instance.close();
-
-    super.dispose();
-  }
 
   List<Widget> _widgetOptions(BuildContext context) => <Widget>[
     const HomeScreen(),

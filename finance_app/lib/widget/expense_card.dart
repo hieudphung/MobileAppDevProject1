@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../finance_provider.dart';
+
 import 'package:pie_chart/pie_chart.dart';
 
 // import '../database/finance_tables.dart';
@@ -20,13 +24,13 @@ final gradientForExpenses = <List<Color>> [
     const Color.fromRGBO(176, 63, 62, 1),
     const Color.fromRGBO(254, 154, 92, 1),
   ],
+  [
+    const Color.fromARGB(255, 219, 68, 224),
+    const Color.fromARGB(255, 163, 111, 223),
+  ],
 ];
 
 final gradientForIncome = <List<Color>> [
-  [
-    const Color.fromARGB(255, 219, 68, 224),
-    const Color.fromARGB(255, 223, 111, 135),
-  ],
   [
     const Color.fromARGB(255, 219, 201, 95),
     const Color.fromARGB(255, 238, 192, 41),
@@ -36,6 +40,19 @@ final gradientForIncome = <List<Color>> [
     const Color.fromARGB(255, 83, 126, 245),
   ],
 ];
+
+Color _getColorByType(String type) {
+  switch (type) {
+    case 'Groceries':
+      return Colors.blue;
+    case 'Insurance':
+      return Colors.green;
+    case 'Bills':
+      return Colors.red;
+    default:
+      return Colors.grey;
+  }
+}
 
 class ExpenseCard extends StatelessWidget {
   const ExpenseCard({super.key, 
@@ -48,17 +65,6 @@ class ExpenseCard extends StatelessWidget {
   Widget build(BuildContext context) {
     //Decide on a title first
     String cardTitle = getMonth(monthDataset.monthNumber);
-
-    /*
-    Keeping as reference for parameters sent
-
-    Map<String, double> dataTest = {
-      "Expense A": 4,
-      "Expense B": 6,
-      "Expense C": 9
-    };
-    */
-
     
     return Card (
       child: Column(
@@ -172,9 +178,223 @@ class StatBar extends StatelessWidget {
         ),),
         SizedBox(
               child: OutlinedButton(
-              onPressed: () => {}, 
+              onPressed: () => {_showAddExpenditureDialog(context)}, 
               child: const Text('Add To'),
         ),),
       ],);
+  }
+
+  void _showAddExpenditureDialog(BuildContext context) {
+    // For getting form data from pop-up
+    Map data = {}; 
+
+    //For saving data
+    void saveData(String formField, dynamic formInput){data[formField] = formInput;}
+
+    //For adding the expense from form
+    void makeExpense(bool validated, int isExpenditure, int expenseType, int amountToPay) {
+      if (validated) {
+          //Goal formGoal = Goal(id: 3, name: goalName, goalType: goalType, description: description, goalCurrent: 0, goalTarget: goalAmount);
+        
+        var provider = context.read<FinanceProvider>();
+        provider.addExpense(monthNumber, isExpenditure, expenseType, amountToPay);
+      }
+    }
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Add New Expenditure'),
+          content: AddExpenditureForm(keepingData: saveData),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            ElevatedButton(
+            onPressed: () {
+              makeExpense(data['validated'], data['isExpenditure'], data['expenditureType'], data['amount']);
+
+              Navigator.of(context).pop();
+            },
+            child: const Text('Add'),
+          ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+
+class AddExpenditureForm extends StatefulWidget {
+  final Function keepingData;
+
+  AddExpenditureForm({required this.keepingData});
+
+  @override
+  _AddExpenditureFormState createState() => _AddExpenditureFormState();
+}
+
+class _AddExpenditureFormState extends State<AddExpenditureForm> {
+  final _formKey = GlobalKey<FormState>();
+
+  //0 is expense
+  //1 is income
+  int _selection = 1;
+
+  String _expenditureType = 'Groceries';
+  int expenditureTypeNum = 1;
+
+  int _amount = 0;
+  bool validated = false;
+
+  void validate() {
+    if (_amount < 1) {
+      validated = false;
+    } else {
+      validated = true;
+    }
+  }
+
+  void setExpenseType() {
+    if (selectionIsExpense()) {
+      if (_expenditureType == 'Groceries') {
+        expenditureTypeNum = 1;
+      } else if (_expenditureType == 'Insurance') {
+        expenditureTypeNum = 2;
+      } else if (_expenditureType == 'Bills') {
+        expenditureTypeNum = 3;
+      } 
+    } else {
+      if (_expenditureType == 'Income') {
+        expenditureTypeNum = 1;
+      } else if (_expenditureType == 'Extra Income') {
+        expenditureTypeNum = 2;
+      }
+    }
+  }
+
+  bool selectionIsExpense() {
+    return (_selection == 1);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    widget.keepingData('validated', validated);
+    widget.keepingData('isExpenditure', _selection);
+    widget.keepingData('expenditureType', expenditureTypeNum);
+    widget.keepingData('amount', _amount);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Form(
+      key: _formKey,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+            ListTile(
+            title: const Text('Expense'),
+            leading: Radio<int>(
+              value: 1,
+              groupValue: _selection,
+              onChanged: (value) {
+                setState(() {
+                  _selection = value!;
+
+                  _expenditureType = 'Groceries';
+                  expenditureTypeNum = 1;
+
+                  widget.keepingData('isExpenditure', _selection);
+                  widget.keepingData('expenditureType', expenditureTypeNum);
+                });
+              },
+              ),
+            ),
+            ListTile(
+            title: const Text('Income'),
+            leading: Radio<int>(
+              value: 2,
+              groupValue: _selection,
+              onChanged: (value) {
+                setState(() {
+                  _selection = value!;
+
+                  _expenditureType = 'Income';
+                  expenditureTypeNum = 1;
+
+                  widget.keepingData('isExpenditure', _selection);
+                  widget.keepingData('expenditureType', expenditureTypeNum);
+                });
+              },
+              ),
+            ),
+
+
+          DropdownButtonFormField<String>(
+            value: _expenditureType,
+            items: (selectionIsExpense()) ? 
+              <String>['Groceries', 'Insurance', 'Bills'].map((String value) {
+              return DropdownMenuItem<String>(
+                value: value,
+                child: Text(value),
+              );
+            }).toList() :
+            <String>['Income', 'Extra Income'].map((String value) {
+              return DropdownMenuItem<String>(
+                value: value,
+                child: Text(value),
+              );
+            }).toList() 
+            ,
+            decoration: const InputDecoration(labelText: 'Expenditure Type'),
+            onChanged: (value) {
+              _expenditureType = value!;
+              setExpenseType();
+
+              setState(() {widget.keepingData('expenditureType', expenditureTypeNum);});
+            },
+          ),
+          TextFormField(
+            decoration: const InputDecoration(labelText: 'Amount'),
+            keyboardType: TextInputType.number,
+            validator: (value) {
+              if (value!.isEmpty) {
+                return 'Please enter an amount';
+              }
+              
+              return null;
+            },
+
+            onChanged: (value) {
+              int newAmount = int.parse(value);
+
+              _amount = newAmount;
+
+              if (newAmount < 0) {
+                _amount = 0;
+              }
+
+              if (newAmount > 10000) {
+                _amount = 10000;
+              }
+
+              validate();
+              
+              setState(() {
+                widget.keepingData('validated', validated);
+                widget.keepingData('amount', _amount);
+              });
+            },
+          ),
+        ],
+      ),
+    );
   }
 }

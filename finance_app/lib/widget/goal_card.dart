@@ -93,7 +93,7 @@ class GoalButtons extends StatelessWidget {
         Expanded(
               child: IconButton(
               onPressed: () => {_showPayGoalDialog(context, goalId)}, 
-              icon: const Icon(Icons.arrow_forward),
+              icon: const Icon(Icons.add),
         ),),
 
         //This button is for deleting an expense
@@ -105,20 +105,19 @@ class GoalButtons extends StatelessWidget {
       ],
     );
   }
-}
-
-
 
   void _showPayGoalDialog(BuildContext context, int goalId) {
-  Map data = {}; //This will hold my data.
-    //And this function edits/adds data to the Map.
+    // For getting form data from pop-up
+    Map data = {}; 
+
+    //For saving data
     void saveData(String formField, dynamic formInput){data[formField] = formInput;}
 
     //This is for processing the data into the database
-    void makeGoal(bool validated, int month, int amountToPay) {
+    void payGoal(bool validated, int month, int amountToPay) {
       if (validated) {
-        //Goal formGoal = Goal(id: 3, name: goalName, goalType: goalType, description: description, goalCurrent: 0, goalTarget: goalAmount);
-      
+          //Goal formGoal = Goal(id: 3, name: goalName, goalType: goalType, description: description, goalCurrent: 0, goalTarget: goalAmount);
+        
         var provider = context.read<FinanceProvider>();
         provider.payForGoal(goalId, month, amountToPay);
       }
@@ -139,10 +138,10 @@ class GoalButtons extends StatelessWidget {
                 //goalFromForm = emptyGoal;
               },
             ),
-            TextButton(
+            ElevatedButton(
               child: const Text('Add'),
               onPressed: () {
-                makeGoal(data['validated'], data['month'], data['goalPay']);
+                payGoal(data['validated'], data['month'], data['goalPay']);
 
                 // Handle adding new goal
                 Navigator.of(context).pop();
@@ -153,6 +152,7 @@ class GoalButtons extends StatelessWidget {
       },
     );
   }
+}
 
 //Goal payment form
 class AddGoalForm extends StatefulWidget {
@@ -225,12 +225,9 @@ class _AddGoalFormState extends State<AddGoalForm> {
             }).toList(),
             decoration: const InputDecoration(labelText: 'Month'),
             onChanged: (value) {
-              setState(() {
-                _monthName = value!;
-                setMonthType();
+              setMonthType();
 
-                setState(() {widget.keepingData('month', month);});
-              });
+              setState(() {widget.keepingData('month', month);});
             },
           ),
 

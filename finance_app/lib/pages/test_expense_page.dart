@@ -42,7 +42,6 @@ class _TestExpensePageState extends State<TestPage> {
     //expenses = await FinanceDatabase.instance.filterExpenses(0, 6);
   }
 
-
   void addGoal() async {
     Goal newGoal = Goal (
       name: "Test Goal 2",

@@ -1,7 +1,7 @@
 //Not used in the database, but for re-organizing expenses for month expense / income cards
 
 class MonthData {
-  const MonthData({
+ MonthData({
     required this.monthNumber,
     required this.totalExpense,
     required this.expenseDataset,
