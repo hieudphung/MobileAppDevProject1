@@ -62,6 +62,14 @@ class FinanceProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  void addExpenseGoal(int month, int goalLink, int amountToPay) {
+    expenses.add(Expense(id: expenses.length, isExpense: 1, cost: amountToPay, expenseType: 4, linkedGoal: goalLink, month: month));
+
+    organizeMonths();
+
+    notifyListeners();
+  }
+
   void addBaseGoal() {
     goals.add(Goal(id: 0, name: 'Test Goal One', goalType: 1, description: 'Test Goal One', goalCurrent: 0, goalTarget: 600));
     goals.add(Goal(id: 1, name: 'Test Goal Two', goalType: 1, description: 'Test Goal Two', goalCurrent: 520, goalTarget: 800));
@@ -71,8 +79,6 @@ class FinanceProvider with ChangeNotifier {
   }
 
   void addNewGoal(Goal newGoal) {
-    //goals.add(const Goal(id: 2, name: 'Test Goal New', goalType: 1, description: 'Test Goal New', goalCurrent: 80, goalTarget: 670));
-
     goals.add(newGoal);
 
     notifyListeners();
@@ -96,6 +102,10 @@ class FinanceProvider with ChangeNotifier {
 
         //finally updating
         goals[i].goalCurrent = goals[i].goalCurrent + actualPayment;
+
+        if (actualPayment > 0) {
+          addExpenseGoal(month, goalId, actualPayment);
+        }
       }
     }
 

@@ -71,9 +71,6 @@ class GoalsScreen extends StatelessWidget {
             TextButton(
               child: const Text('Add'),
               onPressed: () {
-                
-                print('${data['validated']} ${data['goalName']} ${data['goalType']} ${data['description']} ${data['goalAmount']}');
-
                 // Adding to provider
                 makeGoal(data['validated'], data['goalName'], data['goalType'], data['description'], data['goalAmount']);
 

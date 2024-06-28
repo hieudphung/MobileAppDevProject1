@@ -33,8 +33,6 @@ class FinanceDatabase {
     const integerType = 'INTEGER NOT NULL';
     const stringType = 'TEXT NOT NULL';
 
-    print("Database created!");
-
     db.execute(
       '''
     CREATE TABLE $_expenseTable ( 

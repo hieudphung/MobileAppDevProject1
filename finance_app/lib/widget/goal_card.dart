@@ -128,7 +128,7 @@ class GoalButtons extends StatelessWidget {
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text('Add New Goal'),
-          content: AddGoalForm(keepingData: saveData),
+          content: PayGoalForm(keepingData: saveData),
           actions: <Widget>[
             TextButton(
               child: const Text('Cancel'),
@@ -155,17 +155,17 @@ class GoalButtons extends StatelessWidget {
 }
 
 //Goal payment form
-class AddGoalForm extends StatefulWidget {
-  const AddGoalForm({super.key,
+class PayGoalForm extends StatefulWidget {
+  const PayGoalForm({super.key,
   required this.keepingData});
 
   final Function keepingData;
 
   @override
-  _AddGoalFormState createState() => _AddGoalFormState();
+  _PayGoalFormState createState() => _PayGoalFormState();
 }
 
-class _AddGoalFormState extends State<AddGoalForm> {
+class _PayGoalFormState extends State<PayGoalForm> {
   final _formKey = GlobalKey<FormState>();
   bool validated = false;
   
@@ -225,6 +225,7 @@ class _AddGoalFormState extends State<AddGoalForm> {
             }).toList(),
             decoration: const InputDecoration(labelText: 'Month'),
             onChanged: (value) {
+              _monthName = value!;
               setMonthType();
 
               setState(() {widget.keepingData('month', month);});
@@ -273,7 +274,7 @@ void _showDeleteGoal(BuildContext context, int goalId) {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Add New Goal'),
+          title: const Text('Delete Goal'),
           content: DeleteGoalForm(),
           actions: <Widget>[
             TextButton(

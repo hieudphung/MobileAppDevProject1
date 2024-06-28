@@ -183,7 +183,7 @@ class StatBar extends StatelessWidget {
         ),),
       ],);
   }
-
+  
   void _showAddExpenditureDialog(BuildContext context) {
     // For getting form data from pop-up
     Map data = {}; 
@@ -227,6 +227,29 @@ class StatBar extends StatelessWidget {
       },
     );
   }
+
+
+/*
+  void _showExpenditureDetailDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Month Expenditures'),
+          content: ExpenditureDetailForm(),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Back'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },      
+          ),
+          ],
+        );
+      },
+    );
+  }
+  */
 }
 
 
@@ -335,7 +358,6 @@ class _AddExpenditureFormState extends State<AddExpenditureForm> {
               },
               ),
             ),
-
 
           DropdownButtonFormField<String>(
             value: _expenditureType,

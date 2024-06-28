@@ -25,7 +25,6 @@ class _HomePageState extends State<HomePage> {
   }
   */
 
-
   List<Widget> _widgetOptions(BuildContext context) => <Widget>[
     const HomeScreen(),
     const GoalsScreen(),
