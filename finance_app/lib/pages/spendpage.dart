@@ -188,14 +188,16 @@ class _AddExpenditureFormState extends State<AddExpenditureForm> {
                           Color tempColor = _selectedColor;
                           return AlertDialog(
                             title: Text('Pick a color'),
-                            content: SingleChildScrollView(
-                              child: ColorPicker(
+                            content: const SingleChildScrollView(
+                              child: Text('filler'),
+                              /*ColorPicker(
                                 pickerColor: tempColor,
                                 onColorChanged: (color) {
                                   tempColor = color;
                                 },
                                 showLabel: true,
                               ),
+                              */
                             ),
                             actions: <Widget>[
                               TextButton(
