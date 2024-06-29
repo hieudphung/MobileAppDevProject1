@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class RandomTipsPage extends StatelessWidget {
+  const RandomTipsPage ({super.key});
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(

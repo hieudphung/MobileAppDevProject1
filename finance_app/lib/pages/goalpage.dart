@@ -37,7 +37,7 @@ class GoalsScreen extends StatelessWidget {
                       itemBuilder: (_,int index) => GoalCard(goalUsed: provider.goals.elementAt(index)),
                     );
                   } else {
-                    return Center(child: CircularProgressIndicator());
+                    return const Center(child: CircularProgressIndicator());
                   }
                 }
                 

@@ -7,10 +7,7 @@ import '../widget/expense_card.dart';
 
 class SpendingScreen extends StatelessWidget {
   const SpendingScreen({super.key, 
-    //required this.monthDatasets
   });
-
-  //final List<MonthData> monthDatasets;
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +26,7 @@ class SpendingScreen extends StatelessWidget {
                           itemBuilder: (_,int index) => ExpenseCard(monthDataset: provider.monthDatasets.elementAt(index)),
                     );
                   } else {
-                    return Center(child: CircularProgressIndicator());
+                    return const Center(child: CircularProgressIndicator());
                   }
                 } 
              )  

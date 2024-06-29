@@ -106,32 +106,6 @@ class FinanceDatabase {
     ];
   }
 
-  /*
-  Future<List<Expense>> filterExpenses(int expenseFilter, int monthFilter) async {
-    final db = await instance.database;
-
-    final List<Map<String, Object?>> expenseMap = await db.rawQuery(
-        '''
-      SELECT * FROM $_expenseTable where 
-      ${ExpenseFields.isExpense}=? AND
-      ${ExpenseFields.month}=?
-      ORDER BY ${ExpenseFields.expenseType}''', 
-        [expenseFilter, monthFilter]);
-        
-    return [
-      for (final {
-            ExpenseFields.id : id as int,
-            ExpenseFields.isExpense : isExpense as int,
-            ExpenseFields.cost : cost as int,
-            ExpenseFields.expenseType : expenseType as int,
-            ExpenseFields.linkedGoal : linkedGoal as int,
-            ExpenseFields.month : month as int,
-          } in expenseMap)
-        Expense(id: id, isExpense: isExpense, cost: cost, expenseType: expenseType, linkedGoal: linkedGoal, month: month),
-    ];
-  }
-  */
-
   //For the Goals Table
   //Only one that needs updating moneyc
 

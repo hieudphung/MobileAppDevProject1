@@ -6,6 +6,9 @@ import '../model/goal.dart';
 //import '../widget/expense_card.dart';
 import '../widget/goal_card.dart';
 
+
+// This is not a functional page, but exists for testing the database early on
+
 class TestPage extends StatefulWidget {
   const TestPage({super.key, required this.title});
 

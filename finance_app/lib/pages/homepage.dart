@@ -77,41 +77,58 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Column(
-        children: [
+    return Column(
+        children: <Widget>[
+          /*
           SectionCard(
             title: 'Recent Spending / Income',
             onTap: () {
-              Navigator.push(
+              Navigator.push(W
                 context,
                 MaterialPageRoute(builder: (context) => RecentTransactionsPage()),
               );
             },
             color: Colors.blueGrey, // Example color for Recent Spending / Income
           ),
-          SectionCard(
-            title: 'Recent Goals',
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => RecentGoalsPage()),
-              );
-            },
-            color: Colors.blueGrey, // Example color for Recent Goals
+          */
+          const Expanded( 
+            flex: 3,
+            child: Card(
+              color: Colors.blueGrey,
+              child: RecentTransactionsPage(), // Example color for Recent Goals
+            )
           ),
+
+          const Expanded( 
+            flex: 2,
+            child: Card(
+              color: Colors.blueGrey,
+              child: RecentGoalsPage(), // Example color for Recent Goals
+            )
+          ),
+
+          const Expanded( 
+            flex: 2,
+            child: Card(
+              color: Colors.blueGrey,
+              child: RandomTipsPage(), // Example color for Recent Goals
+            )
+          ),
+
+          /*
           SectionCard(
             title: 'Random Tips',
+            
+            color: Colors.blueGrey,
             onTap: () {
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => RandomTipsPage()),
               );
-            },
-            color: Colors.blueGrey, // Example color for Random Tips
+            }, // Example color for Random Tips
           ),
+          */
         ],
-      ),
     );
   }
 }

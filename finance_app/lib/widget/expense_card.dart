@@ -458,9 +458,9 @@ class _AddExpenditureDetailsState extends State<AddExpenditureDetails> {
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           //Make a list from the returned month expenses
-            Flexible(child: Text('Expenses')),
+            const Flexible(child: Text('Expenses')),
             ExpenseDetailList(monthId: widget.monthId, isExpense: true),
-            Flexible(child: Text('Income')),
+            const Flexible(child: Text('Income')),
             ExpenseDetailList(monthId: widget.monthId, isExpense: false),
         ],
       ),
@@ -515,7 +515,7 @@ class ExpenseDetail extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Color expenseColor = Color.fromRGBO(0, 0, 0, 0);
+    Color expenseColor = const Color.fromRGBO(0, 0, 0, 0);
     String expenseLabel = '';
 
     //1 is expense
