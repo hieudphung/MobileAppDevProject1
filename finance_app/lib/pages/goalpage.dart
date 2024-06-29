@@ -28,10 +28,20 @@ class GoalsScreen extends StatelessWidget {
           child: 
                 Consumer<FinanceProvider>(
                 builder: (context, provider, child) =>
-                ListView.builder(
-            itemCount: provider.goals.length,
-            itemBuilder: (_,int index) => GoalCard(goalUsed: provider.goals.elementAt(index)),
-              ),
+                FutureBuilder (
+                future: provider.goalLoaded,
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    return ListView.builder(
+                      itemCount: provider.goals.length,
+                      itemBuilder: (_,int index) => GoalCard(goalUsed: provider.goals.elementAt(index)),
+                    );
+                  } else {
+                    return Center(child: CircularProgressIndicator());
+                  }
+                }
+                
+                ),
           )
         )//*/
       ],

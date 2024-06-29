@@ -9,8 +9,13 @@ import '../model/month_data.dart';
 class FinanceProvider with ChangeNotifier {
   FinanceProvider () {
     //Getting the data already
-    addBaseExpenses();
-    addBaseGoal();
+    //addBaseExpenses();
+    //addBaseGoal();
+    fetchExpenses();
+    
+    goalLoaded = fetchGoals();
+
+    notifyListeners();
   }
 
   @override
@@ -30,9 +35,12 @@ class FinanceProvider with ChangeNotifier {
   List<MonthData> monthDatasets = List.empty(growable: true);
   List<Goal> goals = List.empty(growable: true);
 
-  // more dummy testing
-  void addBaseExpenses() {
+  late Future expensesLoaded;
+  late Future goalLoaded;
 
+  // just for dummy testing
+  void addBaseExpenses() {
+    
     expenses.add(const Expense(id: 0, isExpense: 1, cost: 70, expenseType: 1, linkedGoal: 0, month: 6));
     expenses.add(const Expense(id: 1, isExpense: 1, cost: 20, expenseType: 2, linkedGoal: 0, month: 6));
     expenses.add(const Expense(id: 2, isExpense: 1, cost: 30, expenseType: 3, linkedGoal: 0, month: 6));
@@ -54,39 +62,65 @@ class FinanceProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  void addExpense(int month, int isExpense, int expenseType, int amountToPay) {
-    expenses.add(Expense(id: expenses.length, isExpense: isExpense, cost: amountToPay, expenseType: expenseType, linkedGoal: 0, month: month));
+  Future<void> fetchExpenses() async {
+    expenses = await FinanceDatabase.instance.expenses();
 
-    organizeMonths();
+    expensesLoaded = organizeMonths();
+    //return true;
+  }
+
+  void addExpense(int month, int isExpense, int expenseType, int amountToPay) async {
+    Expense newExpense = Expense(isExpense: isExpense, cost: amountToPay, expenseType: expenseType, linkedGoal: 0, month: month);
+
+    await FinanceDatabase.instance.addExpense(newExpense);
+    //expenses.add();
+
+    fetchExpenses();
 
     notifyListeners();
   }
 
-  void addExpenseGoal(int month, int goalLink, int amountToPay) {
-    expenses.add(Expense(id: expenses.length, isExpense: 1, cost: amountToPay, expenseType: 4, linkedGoal: goalLink, month: month));
+  void addExpenseGoal(int month, int goalLink, int amountToPay) async {
+    Expense newExpense = Expense(isExpense: 1, cost: amountToPay, expenseType: 4, linkedGoal: goalLink, month: month);
 
-    organizeMonths();
+    await FinanceDatabase.instance.addExpense(newExpense);
+    //expenses.add(Expense(id: expenses.length, isExpense: 1, cost: amountToPay, expenseType: 4, linkedGoal: goalLink, month: month));
+
+    fetchExpenses();
 
     notifyListeners();
   }
 
-  void deleteExpense(int expenseId) {
+  void deleteExpense(int expenseId) async {
     //Get proper goalId first
+    /*
     for(var i = 0; i < expenses.length; i++){
       Expense currentExpense = expenses[i];
 
       //check if proper goalId
       if (currentExpense.id == expenseId) {
-        print('deleting expense...');
-        expenses.removeAt(i);
+        //dummy steps
+        //print('deleting expense...');
+        //expenses.removeAt(i);
+
+        
       }
     }
+    */
+    await FinanceDatabase.instance.deleteExpense(expenseId);
 
-    organizeMonths();
+    fetchExpenses();
 
     notifyListeners();
   }
 
+  Future<bool> fetchGoals() async {
+    goals = await FinanceDatabase.instance.goals();
+
+    return true;
+  }
+
+  //Just a dummy function
   void addBaseGoal() {
     goals.add(Goal(id: 0, name: 'Test Goal One', goalType: 1, description: 'Test Goal One', goalCurrent: 0, goalTarget: 600));
     goals.add(Goal(id: 1, name: 'Test Goal Two', goalType: 1, description: 'Test Goal Two', goalCurrent: 520, goalTarget: 800));
@@ -95,13 +129,18 @@ class FinanceProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  void addNewGoal(Goal newGoal) {
-    goals.add(newGoal);
+  void addNewGoal(Goal newGoal) async {
+    await FinanceDatabase.instance.addGoal(newGoal);
+    //dummy step
+    //goals.add(newGoal);
+
+    goalLoaded = fetchGoals();
 
     notifyListeners();
   }
 
-  void payForGoal(int goalId, int month, int goalPay) {
+  //To confirm a payable goal
+  Future<void> payForGoal(int goalId, int month, int goalPay) async {
     //Get proper goalId first
     for(var i = 0; i < goals.length; i++){
       Goal currentGoal = goals[i];
@@ -118,32 +157,28 @@ class FinanceProvider with ChangeNotifier {
         }
 
         //finally updating
-        goals[i].goalCurrent = goals[i].goalCurrent + actualPayment;
+        //goals[i].goalCurrent = goals[i].goalCurrent + actualPayment;
+        currentGoal.goalCurrent = currentGoal.goalCurrent + actualPayment;
 
         if (actualPayment > 0) {
           addExpenseGoal(month, goalId, actualPayment);
+          await FinanceDatabase.instance.updateGoal(currentGoal);
         }
       }
     }
 
-    notifyListeners();
-  }
-
-  void deleteGoal(int goalId) {
-    //Get proper goalId first
-    for(var i = 0; i < goals.length; i++){
-      Goal currentGoal = goals[i];
-
-      //check if proper goalId
-      if (currentGoal.id == goalId) {
-        goals.removeAt(i);
-      }
-    }
+    goalLoaded = fetchGoals();
 
     notifyListeners();
   }
 
-  void organizeMonths() {
+  void deleteGoal(int goalId) async {
+    await FinanceDatabase.instance.deleteGoal(goalId);
+
+    notifyListeners();
+  }
+
+  Future<void> organizeMonths() async {
     //Reset the months first
     monthDatasets = List.empty(growable: true);
 
@@ -205,16 +240,8 @@ class FinanceProvider with ChangeNotifier {
         ),
       );
     }
-  }
 
-  //These are the real functions
-  void getExpenses() async {
-    expenses = await FinanceDatabase.instance.expenses();
-
-    //Take from expenses, and organize into month expenses and income
-    organizeMonths();
-
-    notifyListeners();
+    //return true;
   }
 
   List<Expense> getExpensesByMonth(int getMonth) {
@@ -244,11 +271,4 @@ class FinanceProvider with ChangeNotifier {
 
     return returningIncome;
   }
-
-  void getGoals() async {
-    goals = await FinanceDatabase.instance.goals();
-    notifyListeners();
-  }
-
-  
 }

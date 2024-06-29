@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import './finance_provider.dart';
 
 import '../pages/homepage.dart';
+//import '../pages/test_expense_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -29,6 +30,7 @@ class FinanceApp extends StatelessWidget {
           scaffoldBackgroundColor: Colors.blueGrey[300], // Change the background color here
         ),
         home: HomePage(),
+              //TestPage(title: 'Test'),
       );
   }
 }

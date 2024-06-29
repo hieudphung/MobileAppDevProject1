@@ -20,10 +20,19 @@ class SpendingScreen extends StatelessWidget {
           child: 
               Consumer<FinanceProvider>(
                 builder: (context, provider, child) =>
-                ListView.builder(
-          itemCount: provider.monthDatasets.length,
-          itemBuilder: (_,int index) => ExpenseCard(monthDataset: provider.monthDatasets.elementAt(index)),
-            ),
+                FutureBuilder (
+                future: Future.wait([provider.fetchExpenses(), provider.organizeMonths(), provider.expensesLoaded]),
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                      return ListView.builder(
+                          itemCount: provider.monthDatasets.length,
+                          itemBuilder: (_,int index) => ExpenseCard(monthDataset: provider.monthDatasets.elementAt(index)),
+                    );
+                  } else {
+                    return Center(child: CircularProgressIndicator());
+                  }
+                } 
+             )  
           )
         )
       ],

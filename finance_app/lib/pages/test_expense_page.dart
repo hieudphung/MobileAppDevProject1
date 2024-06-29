@@ -23,7 +23,7 @@ class _TestExpensePageState extends State<TestPage> {
   void addExpense() async {
     const newExpense = Expense (
       isExpense: 1,
-      cost: 900,
+      cost: 200,
       expenseType: 1,
       linkedGoal: 0,    // doesn't need a value, unless added from the pay goal button
       month: 6,

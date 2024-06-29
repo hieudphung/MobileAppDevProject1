@@ -106,6 +106,7 @@ class FinanceDatabase {
     ];
   }
 
+  /*
   Future<List<Expense>> filterExpenses(int expenseFilter, int monthFilter) async {
     final db = await instance.database;
 
@@ -129,6 +130,7 @@ class FinanceDatabase {
         Expense(id: id, isExpense: isExpense, cost: cost, expenseType: expenseType, linkedGoal: linkedGoal, month: month),
     ];
   }
+  */
 
   //For the Goals Table
   //Only one that needs updating moneyc
