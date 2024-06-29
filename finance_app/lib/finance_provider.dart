@@ -70,6 +70,23 @@ class FinanceProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  void deleteExpense(int expenseId) {
+    //Get proper goalId first
+    for(var i = 0; i < expenses.length; i++){
+      Expense currentExpense = expenses[i];
+
+      //check if proper goalId
+      if (currentExpense.id == expenseId) {
+        print('deleting expense...');
+        expenses.removeAt(i);
+      }
+    }
+
+    organizeMonths();
+
+    notifyListeners();
+  }
+
   void addBaseGoal() {
     goals.add(Goal(id: 0, name: 'Test Goal One', goalType: 1, description: 'Test Goal One', goalCurrent: 0, goalTarget: 600));
     goals.add(Goal(id: 1, name: 'Test Goal Two', goalType: 1, description: 'Test Goal Two', goalCurrent: 520, goalTarget: 800));
@@ -198,6 +215,34 @@ class FinanceProvider with ChangeNotifier {
     organizeMonths();
 
     notifyListeners();
+  }
+
+  List<Expense> getExpensesByMonth(int getMonth) {
+    List<Expense> returningExpense = List.empty(growable:true);
+
+    for (var i = 0; i < expenses.length; i++) {
+      Expense currentExpense = expenses[i];
+
+      if (currentExpense.isExpense == 1 && currentExpense.month == getMonth) {
+        returningExpense.add(currentExpense);
+      }
+    }
+
+    return returningExpense;
+  }
+
+  List<Expense> getIncomeByMonth(int getMonth) {
+    List<Expense> returningIncome = List.empty(growable:true);
+
+    for (var i = 0; i < expenses.length; i++) {
+      Expense currentExpense = expenses[i];
+
+      if (currentExpense.isExpense != 1 && currentExpense.month == getMonth) {
+        returningIncome.add(currentExpense);
+      }
+    }
+
+    return returningIncome;
   }
 
   void getGoals() async {

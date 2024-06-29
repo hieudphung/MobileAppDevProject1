@@ -5,20 +5,19 @@ import '../finance_provider.dart';
 
 import 'package:pie_chart/pie_chart.dart';
 
-// import '../database/finance_tables.dart';
-
+import '../model/expense.dart';
 import '../model/month_data.dart';
 
 import '../common/common.dart';
 
 final gradientForExpenses = <List<Color>> [
   [
-    const Color.fromRGBO(198, 224, 68, 1),
-    const Color.fromRGBO(129, 224, 112, 1),
-  ],
-  [
     const Color.fromRGBO(129, 182, 205, 1),
     const Color.fromRGBO(91, 253, 199, 1),
+  ],
+  [
+    const Color.fromRGBO(198, 224, 68, 1),
+    const Color.fromRGBO(129, 224, 112, 1),
   ],
   [
     const Color.fromRGBO(176, 63, 62, 1),
@@ -32,12 +31,12 @@ final gradientForExpenses = <List<Color>> [
 
 final gradientForIncome = <List<Color>> [
   [
-    const Color.fromARGB(255, 219, 201, 95),
-    const Color.fromARGB(255, 238, 192, 41),
-  ],
-  [
     const Color.fromARGB(255, 49, 128, 173),
     const Color.fromARGB(255, 83, 126, 245),
+  ],
+  [
+    const Color.fromARGB(255, 219, 201, 95),
+    const Color.fromARGB(255, 238, 192, 41),
   ],
 ];
 
@@ -173,7 +172,7 @@ class StatBar extends StatelessWidget {
       children: <Widget>[
             SizedBox(
               child: OutlinedButton(
-              onPressed: () => {print(monthNumber)}, 
+              onPressed: () => {_showExpenditureDetailDialog(context)}, 
               child: const Text('Details'),
         ),),
         SizedBox(
@@ -194,8 +193,6 @@ class StatBar extends StatelessWidget {
     //For adding the expense from form
     void makeExpense(bool validated, int isExpenditure, int expenseType, int amountToPay) {
       if (validated) {
-          //Goal formGoal = Goal(id: 3, name: goalName, goalType: goalType, description: description, goalCurrent: 0, goalTarget: goalAmount);
-        
         var provider = context.read<FinanceProvider>();
         provider.addExpense(monthNumber, isExpenditure, expenseType, amountToPay);
       }
@@ -229,14 +226,17 @@ class StatBar extends StatelessWidget {
   }
 
 
-/*
+
   void _showExpenditureDetailDialog(BuildContext context) {
+    //get month first
+    String monthText = getMonth(monthNumber);
+
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Month Expenditures'),
-          content: ExpenditureDetailForm(),
+          title: Text('$monthText Expenditures'),
+          content: AddExpenditureDetails(monthId: monthNumber),
           actions: <Widget>[
             TextButton(
               child: const Text('Back'),
@@ -249,7 +249,6 @@ class StatBar extends StatelessWidget {
       },
     );
   }
-  */
 }
 
 
@@ -417,6 +416,158 @@ class _AddExpenditureFormState extends State<AddExpenditureForm> {
           ),
         ],
       ),
+    );
+  }
+}
+
+
+
+
+class AddExpenditureDetails extends StatefulWidget {
+  const AddExpenditureDetails({super.key,
+  required this.monthId,
+  });
+
+  final int monthId;
+
+  @override
+  _AddExpenditureDetailsState createState() => _AddExpenditureDetailsState();
+}
+
+class _AddExpenditureDetailsState extends State<AddExpenditureDetails> {
+  List<Expense> expenses = List.empty();
+  List<Expense> incomes = List.empty();
+
+  @override initState() {
+    super.initState();
+
+    int monthToGet = widget.monthId;
+    
+    var provider = context.read<FinanceProvider>();
+
+    //Get stuff to expand expenses and income
+    expenses = provider.getExpensesByMonth(monthToGet);
+    incomes = provider.getIncomeByMonth(monthToGet);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.maxFinite,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          //Make a list from the returned month expenses
+            Flexible(child: Text('Expenses')),
+            ExpenseDetailList(monthId: widget.monthId, isExpense: true),
+            Flexible(child: Text('Income')),
+            ExpenseDetailList(monthId: widget.monthId, isExpense: false),
+        ],
+      ),
+      
+    );
+  }
+}
+
+class ExpenseDetailList extends StatelessWidget {
+  const ExpenseDetailList ({super.key,
+    required this.monthId,
+    required this.isExpense,
+  });
+
+  final int monthId;
+  final bool isExpense;
+
+  @override
+  Widget build(BuildContext context) {
+    return //Text('${expenseDetails.length}');
+      Expanded(
+        child: 
+              Consumer<FinanceProvider>(
+                builder: (context, provider, child) =>
+                ListView.builder(
+              shrinkWrap: true,
+              itemCount: isExpense ? 
+                          provider.getExpensesByMonth(monthId).length : 
+                          provider.getIncomeByMonth(monthId).length,
+              itemBuilder: (_,int index) => isExpense ? 
+                                            ExpenseDetail(expenseToDetail: provider.getExpensesByMonth(monthId)[index]) :
+                                            ExpenseDetail(expenseToDetail: provider.getIncomeByMonth(monthId)[index]),
+            )
+        )
+    );
+  }
+}
+
+class ExpenseDetail extends StatelessWidget {
+  const ExpenseDetail ({super.key,
+    required this.expenseToDetail,
+  });
+
+  final Expense expenseToDetail;
+
+  void _deleteExpense(BuildContext context) {
+    var provider = context.read<FinanceProvider>();
+
+    //Get stuff to expand expenses and income
+    provider.deleteExpense(expenseToDetail.id!);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    Color expenseColor = Color.fromRGBO(0, 0, 0, 0);
+    String expenseLabel = '';
+
+    //1 is expense
+    if (expenseToDetail.isExpense == 1) {
+      switch(expenseToDetail.expenseType){
+          case 1:
+            expenseColor = gradientForExpenses[0][0];
+            expenseLabel = 'Groceries';
+          case 2:
+            expenseColor = gradientForExpenses[1][0];
+            expenseLabel = 'Insurance';
+          case 3:
+            expenseColor = gradientForExpenses[2][0];
+            expenseLabel = 'Bills';
+          case 4:
+            expenseColor = gradientForExpenses[3][0];
+            expenseLabel = 'Goal';
+      }
+    } else {
+    //2 is income
+      switch(expenseToDetail.expenseType){
+          case 1:
+            expenseColor = gradientForIncome[0][0];
+            expenseLabel = 'Income';
+          case 2:
+            expenseColor = gradientForIncome[1][0];
+            expenseLabel = 'Extra Income';
+      }
+    }
+
+    return Flexible(
+      child: Row(
+        children: <Widget>[
+          Expanded (
+            child: Icon(
+              Icons.circle,
+              color: expenseColor,)
+            ,
+          ),
+          Expanded (
+            flex: 5,
+            child: Text ('$expenseLabel -- Cost: \$${expenseToDetail.cost}'),
+          ),
+          Expanded (
+            flex: 1,
+            child: IconButton(
+              icon: const Icon(Icons.delete),
+              onPressed: () => _deleteExpense(context),
+            )
+          ),
+        ]
+      )
     );
   }
 }
