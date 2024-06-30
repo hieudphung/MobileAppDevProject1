@@ -40,19 +40,6 @@ final gradientForIncome = <List<Color>> [
   ],
 ];
 
-Color _getColorByType(String type) {
-  switch (type) {
-    case 'Groceries':
-      return Colors.blue;
-    case 'Insurance':
-      return Colors.green;
-    case 'Bills':
-      return Colors.red;
-    default:
-      return Colors.grey;
-  }
-}
-
 class ExpenseCard extends StatelessWidget {
   const ExpenseCard({super.key, 
     required this.monthDataset,
@@ -488,7 +475,7 @@ class ExpenseDetailList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return //Text('${expenseDetails.length}');
+    return 
       Expanded(
         child:
               Consumer<FinanceProvider>(

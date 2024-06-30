@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../common/common.dart';
+
 import '../finance_provider.dart';
 
-// import '../database/finance_tables.dart';
 import '../model/goal.dart';
 import '../model/expense.dart';
 
@@ -26,7 +27,7 @@ class GoalCard extends StatelessWidget {
         children: <Widget>[
           GoalHead(cardTitle: goalUsed.name, currentAmount: goalUsed.goalCurrent, targetAmount: goalUsed.goalTarget),
           GoalBar(goalBar: currentDouble/targetDouble),
-          GoalButtons(goalId: goalUsed.id!),
+          GoalButtons(goalId: goalUsed.id!, goalName: goalUsed.name, goalType: goalUsed.goalType, description: goalUsed.description),
         ]
       )
     );
@@ -49,7 +50,7 @@ class GoalHead extends StatelessWidget {
     return Row(
       children: <Widget>[
         Expanded(child: Text(cardTitle)),
-        Expanded(child: Text('$currentAmount / $targetAmount')),
+        Expanded(child: Text('\$$currentAmount / \$$targetAmount')),
       ],
     );
   }
@@ -81,10 +82,16 @@ class GoalBar extends StatelessWidget {
 
 class GoalButtons extends StatelessWidget {
   const GoalButtons({super.key,
-    required this.goalId
+    required this.goalId,
+    required this.goalName,
+    required this.goalType,
+    required this.description
   });
 
   final int goalId;
+  final String goalName;
+  final int goalType;
+  final String description;
 
   @override
   Widget build(BuildContext context) {
@@ -123,8 +130,6 @@ class GoalButtons extends StatelessWidget {
     //This is for processing the data into the database
     void payGoal(bool validated, int month, int amountToPay) {
       if (validated) {
-          //Goal formGoal = Goal(id: 3, name: goalName, goalType: goalType, description: description, goalCurrent: 0, goalTarget: goalAmount);
-        
         var provider = context.read<FinanceProvider>();
         provider.payForGoal(goalId, month, amountToPay);
       }
@@ -166,7 +171,7 @@ class GoalButtons extends StatelessWidget {
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text('Add New Goal'),
-          content: ShowGoalInfoDialog(goalId: goalId),
+          content: ShowGoalInfoDialog(goalId: goalId, goalName: goalName, goalType: goalType, description: description),
           actions: <Widget>[
             TextButton(
               child: const Text('Cancel'),
@@ -285,7 +290,7 @@ class _PayGoalFormState extends State<PayGoalForm> {
 
           DropdownButtonFormField<String>(
             value: _monthName,
-            items: <String>[' January', ' February', ' March', ' April', ' May', ' June'].map((String value) {
+            items: <String>['January', 'February', 'March', 'April', 'May', 'June'].map((String value) {
               return DropdownMenuItem<String>(
                 value: value,
                 child: Text(value),
@@ -352,26 +357,66 @@ class _DeleteGoalFormState extends State<DeleteGoalForm> {
 
 class ShowGoalInfoDialog extends StatefulWidget {
   const ShowGoalInfoDialog({super.key,
-  required this.goalId,
+    required this.goalId,
+    required this.goalName,
+    required this.goalType,
+    required this.description,
   });
 
   final int goalId;
+  final String goalName;
+  final int goalType;
+  final String description;
 
   @override
   _AddGoalDetailState createState() => _AddGoalDetailState();
 }
 
 class _AddGoalDetailState extends State<ShowGoalInfoDialog> {
+  Color goalTypeColor = const Color.fromRGBO(0, 0, 0, 0);
+  String goalTypeLabel = '';
+
+  @override
+  initState() {
+    super.initState();
+
+    switch(widget.goalType){
+          case 1:
+            goalTypeColor = Colors.blue;
+            goalTypeLabel = 'Saving';
+          case 2:
+            goalTypeColor = Colors.green;
+            goalTypeLabel = 'Investment';
+          case 3:
+            goalTypeColor = Colors.red;
+            goalTypeLabel = 'Miscellaneous';
+      }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       width: double.maxFinite,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           //Make a list from the returned month expenses
-            const Flexible(child: Text('Goal -- ')),
-            const Flexible(child: Text('Description -- ')),
+           Flexible(child: Text('Goal Name: ${widget.goalName}')),
+
+           Flexible(child: 
+            Row(children: <Widget>[
+              Expanded (
+            child: Icon(
+              Icons.circle,
+              color: goalTypeColor,),
+            ),
+            Expanded (
+              flex: 5,
+              child: Text ('Goal Type: $goalTypeLabel'),
+            ),
+            ],)),
+
+           Flexible(child: Text('Description: ${widget.description}')),
             GoalDetailList(goalId: widget.goalId),
         ],
       ),
@@ -424,23 +469,12 @@ class ExpenseGoalDetail extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Color expenseColor = const Color.fromRGBO(0, 0, 0, 0);
-    String expenseLabel = '';
-
-    //get month from common file
-
     return Flexible(
       child: Row(
         children: <Widget>[
           Expanded (
-            child: Icon(
-              Icons.circle,
-              color: expenseColor,)
-            ,
-          ),
-          Expanded (
             flex: 5,
-            child: Text ('$expenseLabel -- Cost: \$${expenseGoalToDetail.cost}'),
+            child: Text ('${getMonth(expenseGoalToDetail.month)} - Cost: \$${expenseGoalToDetail.cost}'),
           ),
           Expanded (
             flex: 1,

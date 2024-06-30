@@ -9,8 +9,7 @@ import '../model/month_data.dart';
 class FinanceProvider with ChangeNotifier {
   FinanceProvider () {
     //Getting the data already
-    //addBaseExpenses();
-    //addBaseGoal();
+
     fetchExpenses();
     
     expensesLoaded = fetchExpenses();
