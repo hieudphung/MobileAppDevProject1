@@ -55,7 +55,7 @@ class _HomePageState extends State<HomePage> {
             label: 'Goals',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.money),
+            icon: Icon(Icons.auto_graph),
             label: 'Spending',
           ),
         ],
@@ -64,8 +64,8 @@ class _HomePageState extends State<HomePage> {
         onTap: _onItemTapped,
         selectedFontSize: 18.0, // Adjust as needed
         unselectedFontSize: 16.0, // Adjust as needed
-        selectedLabelStyle: const TextStyle(fontWeight: FontWeight.bold), // Adjust as needed
-        unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.normal), // Adjust as needed
+        selectedLabelStyle: const TextStyle(fontWeight: FontWeight.bold),
+        unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.normal),
       ),
 
     );
