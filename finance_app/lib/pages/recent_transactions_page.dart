@@ -15,7 +15,10 @@ class RecentTransactionsPage extends StatelessWidget {
           children: <Widget>[
             const Expanded(
               flex: 1,
-              child: Text('Recent Transactions'),),
+              child: Text('Recent Transactions'),
+
+            ),
+
             Expanded(
               flex: 4,
               child: 

@@ -217,7 +217,7 @@ class _PayGoalFormState extends State<PayGoalForm> {
 
           DropdownButtonFormField<String>(
             value: _monthName,
-            items: <String>['January', 'February', 'March', 'April', 'May', 'June'].map((String value) {
+            items: <String>[' January', ' February', ' March', ' April', ' May', ' June'].map((String value) {
               return DropdownMenuItem<String>(
                 value: value,
                 child: Text(value),

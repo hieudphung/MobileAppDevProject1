@@ -91,7 +91,7 @@ class HomeScreen extends StatelessWidget {
             color: Colors.blueGrey, // Example color for Recent Spending / Income
           ),
           */
-          const Expanded( 
+          const Expanded(
             flex: 3,
             child: Card(
               color: Colors.blueGrey,
@@ -99,7 +99,7 @@ class HomeScreen extends StatelessWidget {
             )
           ),
 
-          const Expanded( 
+          const Expanded(
             flex: 2,
             child: Card(
               color: Colors.blueGrey,
@@ -107,7 +107,7 @@ class HomeScreen extends StatelessWidget {
             )
           ),
 
-          const Expanded( 
+          const Expanded(
             flex: 2,
             child: Card(
               color: Colors.blueGrey,
@@ -147,10 +147,10 @@ class SectionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: const EdgeInsets.all(11.0), // Increased margin for larger bubble appearance
+      margin: const EdgeInsets.all(40.0), // Increased margin for larger bubble appearance
       color: color,
       child: Padding(
-        padding: const EdgeInsets.all(55.0),
+        padding: const EdgeInsets.all(10.0),
         child: ListTile(
           title: Text(
             title,
