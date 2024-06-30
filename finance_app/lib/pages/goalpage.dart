@@ -3,7 +3,6 @@ import 'package:provider/provider.dart';
 
 import '../finance_provider.dart';
 
-import '../model/goal.dart';
 import '../widget/goal_card.dart';
 
 class GoalsScreen extends StatelessWidget {
@@ -54,12 +53,10 @@ class GoalsScreen extends StatelessWidget {
     void saveData(String formField, dynamic formInput){data[formField] = formInput;}
 
     //This is for processing the data into the database
-    void makeGoal(bool validated, String goalName, int goalType, String description, int goalAmount) {
+    void makeGoal(bool validated, String goalName, int goalType, String description, int goalAmount) async {
       if (validated) {
-        Goal formGoal = Goal(id: 3, name: goalName, goalType: goalType, description: description, goalCurrent: 0, goalTarget: goalAmount);
-
         var provider = context.read<FinanceProvider>();
-        provider.addNewGoal(formGoal);
+        await provider.addNewGoal(goalName, goalType, description, goalAmount);
       }
     }
 

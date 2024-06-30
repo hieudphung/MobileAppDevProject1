@@ -501,11 +501,11 @@ class ExpenseDetail extends StatelessWidget {
 
   final Expense expenseToDetail;
 
-  void _deleteExpense(BuildContext context) {
+  void _deleteExpense(BuildContext context) async {
     var provider = context.read<FinanceProvider>();
 
     //Get stuff to expand expenses and income
-    provider.deleteExpense(expenseToDetail.id!);
+    await provider.deleteExpense(expenseToDetail.id!);
   }
 
   @override

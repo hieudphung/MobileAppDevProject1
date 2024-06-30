@@ -69,29 +69,29 @@ class FinanceProvider with ChangeNotifier {
     //return true;
   }
 
-  void addExpense(int month, int isExpense, int expenseType, int amountToPay) async {
+  Future<void> addExpense(int month, int isExpense, int expenseType, int amountToPay) async {
     Expense newExpense = Expense(isExpense: isExpense, cost: amountToPay, expenseType: expenseType, linkedGoal: 0, month: month);
 
     await FinanceDatabase.instance.addExpense(newExpense);
     //expenses.add();
 
-    fetchExpenses();
+    expensesLoaded = fetchExpenses();
 
     notifyListeners();
   }
 
-  void addExpenseGoal(int month, int goalLink, int amountToPay) async {
+  Future<void> addExpenseGoal(int month, int goalLink, int amountToPay) async {
     Expense newExpense = Expense(isExpense: 1, cost: amountToPay, expenseType: 4, linkedGoal: goalLink, month: month);
 
     await FinanceDatabase.instance.addExpense(newExpense);
     //expenses.add(Expense(id: expenses.length, isExpense: 1, cost: amountToPay, expenseType: 4, linkedGoal: goalLink, month: month));
 
-    fetchExpenses();
+    expensesLoaded = fetchExpenses();
 
     notifyListeners();
   }
 
-  void deleteExpense(int expenseId) async {
+  Future<void> deleteExpense(int expenseId) async {
 
     //Get the existing expense from id to check if linked to a goal
     //Get proper goalId first
@@ -110,7 +110,7 @@ class FinanceProvider with ChangeNotifier {
 
     await FinanceDatabase.instance.deleteExpense(expenseId);
 
-    fetchExpenses();
+    expensesLoaded = fetchExpenses();
 
     notifyListeners();
   }
@@ -130,10 +130,12 @@ class FinanceProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  void addNewGoal(Goal newGoal) async {
-    await FinanceDatabase.instance.addGoal(newGoal);
+  Future<void> addNewGoal(String goalName, int goalType, String description, int goalAmount) async {
     //dummy step
     //goals.add(newGoal);
+
+    Goal newGoal = Goal(name: goalName, goalType: goalType, description: description, goalCurrent: 0, goalTarget: goalAmount);
+    await FinanceDatabase.instance.addGoal(newGoal);
 
     goalLoaded = fetchGoals();
 
@@ -188,7 +190,7 @@ class FinanceProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  void deleteGoal(int goalId) async {
+  Future<void> deleteGoal(int goalId) async {
     await FinanceDatabase.instance.deleteGoal(goalId);
 
     goalLoaded = fetchGoals();

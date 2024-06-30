@@ -26,7 +26,7 @@ class RecentGoalsPage extends StatelessWidget {
                         if (snapshot.hasData) {
                           return ListView.builder(
                             physics: const NeverScrollableScrollPhysics(),
-                            itemCount: (provider.goals.length < 3) ? provider.goals.length : 3,
+                            itemCount: (provider.goals.length < 2) ? provider.goals.length : 2,
                             itemBuilder: (_,int index) => RecentGoalCard(goalUsed: provider.goals.elementAt(index)),
                           );
                         } else {

@@ -128,10 +128,10 @@ class GoalButtons extends StatelessWidget {
     void saveData(String formField, dynamic formInput){data[formField] = formInput;}
 
     //This is for processing the data into the database
-    void payGoal(bool validated, int month, int amountToPay) {
+    void payGoal(bool validated, int month, int amountToPay) async {
       if (validated) {
         var provider = context.read<FinanceProvider>();
-        provider.payForGoal(goalId, month, amountToPay);
+        await provider.payForGoal(goalId, month, amountToPay);
       }
     }
 
@@ -152,7 +152,7 @@ class GoalButtons extends StatelessWidget {
             ),
             ElevatedButton(
               child: const Text('Add'),
-              onPressed: () {
+              onPressed: () async {
                 payGoal(data['validated'], data['month'], data['goalPay']);
 
                 // Handle adding new goal
@@ -190,9 +190,9 @@ class GoalButtons extends StatelessWidget {
   //Goal deletion form
   void _showDeleteGoal(BuildContext context) {
     //This is for processing the data into the database
-    void deleteGoal() {
+    void deleteGoal() async {
       var provider = context.read<FinanceProvider>();
-      provider.deleteGoal(goalId);
+      await provider.deleteGoal(goalId);
     }
 
     showDialog(
@@ -317,8 +317,8 @@ class _PayGoalFormState extends State<PayGoalForm> {
                 goalPay = 0;
               }
 
-              if (newAmount > 10000) {
-                goalPay = 10000;
+              if (newAmount > 100000) {
+                goalPay = 100000;
               }
 
               validate();
@@ -460,11 +460,11 @@ class ExpenseGoalDetail extends StatelessWidget {
 
   final Expense expenseGoalToDetail;
 
-  void _deleteExpense(BuildContext context) {
+  void _deleteExpense(BuildContext context) async {
     var provider = context.read<FinanceProvider>();
 
     //Get stuff to expand expenses and income
-    provider.deleteExpense(expenseGoalToDetail.id!);
+    await provider.deleteExpense(expenseGoalToDetail.id!);
   }
 
   @override
@@ -480,7 +480,7 @@ class ExpenseGoalDetail extends StatelessWidget {
             flex: 1,
             child: IconButton(
               icon: const Icon(Icons.delete),
-              onPressed: () => _deleteExpense(context),
+              onPressed: () async => _deleteExpense(context),
             )
           ),
         ]
