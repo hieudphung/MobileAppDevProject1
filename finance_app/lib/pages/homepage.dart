@@ -91,26 +91,26 @@ class HomeScreen extends StatelessWidget {
             color: Colors.blueGrey, // Example color for Recent Spending / Income
           ),
           */
-          const Expanded(
+          Expanded(
             flex: 3,
             child: Card(
-              color: Colors.blueGrey,
+              color: Colors.blueGrey[400],
               child: RecentTransactionsPage(), // Example color for Recent Goals
             )
           ),
 
-          const Expanded(
+          Expanded(
             flex: 2,
             child: Card(
-              color: Colors.blueGrey,
+              color: Colors.blueGrey[400],
               child: RecentGoalsPage(), // Example color for Recent Goals
             )
           ),
 
-          const Expanded(
+          Expanded(
             flex: 2,
             child: Card(
-              color: Colors.blueGrey,
+              color: Colors.blueGrey[400],
               child: RandomTipsPage(), // Example color for Recent Goals
             )
           ),
@@ -118,7 +118,7 @@ class HomeScreen extends StatelessWidget {
           /*
           SectionCard(
             title: 'Random Tips',
-            
+
             color: Colors.blueGrey,
             onTap: () {
               Navigator.push(
@@ -136,8 +136,8 @@ class HomeScreen extends StatelessWidget {
 // Would put in separate file, but only really needed to separate home page content
 class SectionCard extends StatelessWidget {
   const SectionCard({super.key,
-    required this.title, 
-    required this.onTap, 
+    required this.title,
+    required this.onTap,
     required this.color});
 
   final String title;
