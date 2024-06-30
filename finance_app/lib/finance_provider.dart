@@ -191,6 +191,8 @@ class FinanceProvider with ChangeNotifier {
   void deleteGoal(int goalId) async {
     await FinanceDatabase.instance.deleteGoal(goalId);
 
+    goalLoaded = fetchGoals();
+
     notifyListeners();
   }
 

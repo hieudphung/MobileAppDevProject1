@@ -170,7 +170,7 @@ class GoalButtons extends StatelessWidget {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Add New Goal'),
+          title: const Text('Goal Details'),
           content: ShowGoalInfoDialog(goalId: goalId, goalName: goalName, goalType: goalType, description: description),
           actions: <Widget>[
             TextButton(
