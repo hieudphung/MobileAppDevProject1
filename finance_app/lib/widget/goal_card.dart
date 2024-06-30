@@ -5,6 +5,7 @@ import '../finance_provider.dart';
 
 // import '../database/finance_tables.dart';
 import '../model/goal.dart';
+import '../model/expense.dart';
 
 //This is the main card for goal
 
@@ -92,21 +93,27 @@ class GoalButtons extends StatelessWidget {
         //This button is for adding payments to the goal
         Expanded(
               child: IconButton(
-              onPressed: () => {_showPayGoalDialog(context, goalId)}, 
+              onPressed: () => {_showPayGoalDialog(context)}, 
               icon: const Icon(Icons.add),
+        ),),
+
+        Expanded(
+              child: IconButton(
+              onPressed: () => {_showGoalInfoDialog(context)}, 
+              icon: const Icon(Icons.info),
         ),),
 
         //This button is for deleting an expense
         Expanded(
               child: IconButton(
-              onPressed: () => {_showDeleteGoal(context, goalId)}, 
+              onPressed: () => {_showDeleteGoal(context)}, 
               icon: const Icon(Icons.delete),
         ),),
       ],
     );
   }
 
-  void _showPayGoalDialog(BuildContext context, int goalId) {
+  void _showPayGoalDialog(BuildContext context) {
     // For getting form data from pop-up
     Map data = {}; 
 
@@ -152,6 +159,67 @@ class GoalButtons extends StatelessWidget {
       },
     );
   }
+
+  void _showGoalInfoDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Add New Goal'),
+          content: ShowGoalInfoDialog(goalId: goalId),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
+
+                //goalFromForm = emptyGoal;
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  //Goal deletion form
+  void _showDeleteGoal(BuildContext context) {
+    //This is for processing the data into the database
+    void deleteGoal() {
+      var provider = context.read<FinanceProvider>();
+      provider.deleteGoal(goalId);
+    }
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Delete Goal'),
+          content: DeleteGoalForm(),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
+
+                //goalFromForm = emptyGoal;
+              },
+            ),
+            TextButton(
+              child: const Text('Delete'),
+              onPressed: () {
+                deleteGoal();
+
+                // Handle adding new goal
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
 }
 
 //Goal payment form
@@ -262,44 +330,6 @@ class _PayGoalFormState extends State<PayGoalForm> {
   }
 }
 
-//Goal deletion form
-void _showDeleteGoal(BuildContext context, int goalId) {
-    //This is for processing the data into the database
-    void deleteGoal() {
-      var provider = context.read<FinanceProvider>();
-      provider.deleteGoal(goalId);
-    }
-
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Delete Goal'),
-          content: DeleteGoalForm(),
-          actions: <Widget>[
-            TextButton(
-              child: const Text('Cancel'),
-              onPressed: () {
-                Navigator.of(context).pop();
-
-                //goalFromForm = emptyGoal;
-              },
-            ),
-            TextButton(
-              child: const Text('Delete'),
-              onPressed: () {
-                deleteGoal();
-
-                // Handle adding new goal
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
-}
-
 class DeleteGoalForm extends StatefulWidget {
   const DeleteGoalForm({super.key});
 
@@ -313,8 +343,114 @@ class _DeleteGoalFormState extends State<DeleteGoalForm> {
     return const Column(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
-          const Text("Are you sure you want to delete this goal?"),
+         Text("Are you sure you want to delete this goal?"),
         ],
+    );
+  }
+}
+
+
+class ShowGoalInfoDialog extends StatefulWidget {
+  const ShowGoalInfoDialog({super.key,
+  required this.goalId,
+  });
+
+  final int goalId;
+
+  @override
+  _AddGoalDetailState createState() => _AddGoalDetailState();
+}
+
+class _AddGoalDetailState extends State<ShowGoalInfoDialog> {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.maxFinite,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          //Make a list from the returned month expenses
+            const Flexible(child: Text('Goal -- ')),
+            const Flexible(child: Text('Description -- ')),
+            GoalDetailList(goalId: widget.goalId),
+        ],
+      ),
+      
+    );
+  }
+}
+
+class GoalDetailList extends StatelessWidget {
+  const GoalDetailList ({super.key,
+    required this.goalId,
+  });
+
+  final int goalId;
+
+  @override
+  Widget build(BuildContext context) {
+    return //Text('${expenseDetails.length}');
+      Expanded(
+        child: 
+            //Static details
+
+            //All the goal spending details here
+              Consumer<FinanceProvider>(
+                builder: (context, provider, child) =>
+                ListView.builder(
+              shrinkWrap: true,
+              itemCount: provider.getExpensesByGoal(goalId).length,
+              itemBuilder: (_,int index) => ExpenseGoalDetail(expenseGoalToDetail: provider.getExpensesByGoal(goalId)[index]),
+            )
+        )
+    );
+  }
+}
+
+
+class ExpenseGoalDetail extends StatelessWidget {
+  const ExpenseGoalDetail ({super.key,
+    required this.expenseGoalToDetail,
+  });
+
+  final Expense expenseGoalToDetail;
+
+  void _deleteExpense(BuildContext context) {
+    var provider = context.read<FinanceProvider>();
+
+    //Get stuff to expand expenses and income
+    provider.deleteExpense(expenseGoalToDetail.id!);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    Color expenseColor = const Color.fromRGBO(0, 0, 0, 0);
+    String expenseLabel = '';
+
+    //get month from common file
+
+    return Flexible(
+      child: Row(
+        children: <Widget>[
+          Expanded (
+            child: Icon(
+              Icons.circle,
+              color: expenseColor,)
+            ,
+          ),
+          Expanded (
+            flex: 5,
+            child: Text ('$expenseLabel -- Cost: \$${expenseGoalToDetail.cost}'),
+          ),
+          Expanded (
+            flex: 1,
+            child: IconButton(
+              icon: const Icon(Icons.delete),
+              onPressed: () => _deleteExpense(context),
+            )
+          ),
+        ]
+      )
     );
   }
 }

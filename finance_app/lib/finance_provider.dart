@@ -13,6 +13,7 @@ class FinanceProvider with ChangeNotifier {
     //addBaseGoal();
     fetchExpenses();
     
+    expensesLoaded = fetchExpenses();
     goalLoaded = fetchGoals();
 
     notifyListeners();
@@ -92,21 +93,22 @@ class FinanceProvider with ChangeNotifier {
   }
 
   void deleteExpense(int expenseId) async {
+
+    //Get the existing expense from id to check if linked to a goal
     //Get proper goalId first
-    /*
-    for(var i = 0; i < expenses.length; i++){
+    for(var i = 0; i < expenses.length; i++) {
       Expense currentExpense = expenses[i];
 
       //check if proper goalId
       if (currentExpense.id == expenseId) {
-        //dummy steps
-        //print('deleting expense...');
-        //expenses.removeAt(i);
-
         
+        //check if it has a linked goal
+        if (currentExpense.linkedGoal != 0) {
+          payForGoal(currentExpense.linkedGoal, 0, -currentExpense.cost);
+        }
       }
     }
-    */
+
     await FinanceDatabase.instance.deleteExpense(expenseId);
 
     fetchExpenses();
@@ -141,27 +143,42 @@ class FinanceProvider with ChangeNotifier {
 
   //To confirm a payable goal
   Future<void> payForGoal(int goalId, int month, int goalPay) async {
-    //Get proper goalId first
+    // Get proper goalId first
     for(var i = 0; i < goals.length; i++){
       Goal currentGoal = goals[i];
 
-      //check if proper goalId
+      // check if proper goalId
       if (currentGoal.id == goalId) {
-        //See if goal has reached its limit if adding goal pay
-        int targetDifference = currentGoal.goalTarget - currentGoal.goalCurrent;
-        int actualPayment = goalPay;
+        
 
-        //paying only as much as needed
-        if (targetDifference < goalPay) {
-          actualPayment = targetDifference;
-        }
+        //check if adding of subbing
+        if (goalPay > 0) {
+          // See if goal has reached its limit if adding goal pay
+          int targetDifference = currentGoal.goalTarget - currentGoal.goalCurrent;
+          int actualPayment = goalPay;
 
-        //finally updating
-        //goals[i].goalCurrent = goals[i].goalCurrent + actualPayment;
-        currentGoal.goalCurrent = currentGoal.goalCurrent + actualPayment;
+          // paying only as much as needed
+          if (targetDifference < goalPay) {
+            actualPayment = targetDifference;
+          }
 
-        if (actualPayment > 0) {
-          addExpenseGoal(month, goalId, actualPayment);
+          //finally updating
+          //goals[i].goalCurrent = goals[i].goalCurrent + actualPayment;
+          currentGoal.goalCurrent = currentGoal.goalCurrent + actualPayment;
+
+          if (actualPayment > 0) {
+            addExpenseGoal(month, goalId, actualPayment);
+            await FinanceDatabase.instance.updateGoal(currentGoal);
+          }
+        } else {
+          // subbing
+          int subDifference = currentGoal.goalCurrent + goalPay;
+
+          if (subDifference < 0) {
+            subDifference = 0;
+          }
+
+          currentGoal.goalCurrent = subDifference;
           await FinanceDatabase.instance.updateGoal(currentGoal);
         }
       }
@@ -251,6 +268,20 @@ class FinanceProvider with ChangeNotifier {
       Expense currentExpense = expenses[i];
 
       if (currentExpense.isExpense == 1 && currentExpense.month == getMonth) {
+        returningExpense.add(currentExpense);
+      }
+    }
+
+    return returningExpense;
+  }
+
+  List<Expense> getExpensesByGoal(int goalId) {
+    List<Expense> returningExpense = List.empty(growable:true);
+
+    for (var i = 0; i < expenses.length; i++) {
+      Expense currentExpense = expenses[i];
+
+      if (currentExpense.isExpense == 1 && currentExpense.linkedGoal == goalId) {
         returningExpense.add(currentExpense);
       }
     }

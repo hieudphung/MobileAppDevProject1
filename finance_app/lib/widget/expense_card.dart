@@ -435,21 +435,6 @@ class AddExpenditureDetails extends StatefulWidget {
 }
 
 class _AddExpenditureDetailsState extends State<AddExpenditureDetails> {
-  List<Expense> expenses = List.empty();
-  List<Expense> incomes = List.empty();
-
-  @override initState() {
-    super.initState();
-
-    int monthToGet = widget.monthId;
-    
-    var provider = context.read<FinanceProvider>();
-
-    //Get stuff to expand expenses and income
-    expenses = provider.getExpensesByMonth(monthToGet);
-    incomes = provider.getIncomeByMonth(monthToGet);
-  }
-
   @override
   Widget build(BuildContext context) {
     return Container(

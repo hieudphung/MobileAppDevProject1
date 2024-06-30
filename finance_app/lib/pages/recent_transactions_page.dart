@@ -1,4 +1,3 @@
-import 'package:finance_app/widget/recent_expense_card.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
