@@ -6,17 +6,17 @@ import 'package:flutter/material.dart';
 String getMonth(int month) {
     switch (month){
       case 1:
-        return 'January';
+        return ' January';
       case 2:
-        return 'February';
+        return ' February';
       case 3:
-        return 'March';
+        return ' March';
       case 4:
-        return 'April';
+        return ' April';
       case 5:
-        return 'May';
+        return ' May';
       case 6:
-        return 'June';
+        return ' June';
         //Only really adding up until June, to replicate as if goes by current month
     }
 

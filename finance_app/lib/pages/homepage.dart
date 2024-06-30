@@ -55,7 +55,7 @@ class _HomePageState extends State<HomePage> {
             label: 'Goals',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.money),
+            icon: Icon(Icons.auto_graph),
             label: 'Spending',
           ),
         ],
@@ -64,8 +64,8 @@ class _HomePageState extends State<HomePage> {
         onTap: _onItemTapped,
         selectedFontSize: 18.0, // Adjust as needed
         unselectedFontSize: 16.0, // Adjust as needed
-        selectedLabelStyle: const TextStyle(fontWeight: FontWeight.bold), // Adjust as needed
-        unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.normal), // Adjust as needed
+        selectedLabelStyle: const TextStyle(fontWeight: FontWeight.bold),
+        unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.normal),
       ),
 
     );
@@ -91,26 +91,26 @@ class HomeScreen extends StatelessWidget {
             color: Colors.blueGrey, // Example color for Recent Spending / Income
           ),
           */
-          const Expanded( 
+          Expanded(
             flex: 3,
             child: Card(
-              color: Colors.blueGrey,
+              color: Colors.blueGrey[400],
               child: RecentTransactionsPage(), // Example color for Recent Goals
             )
           ),
 
-          const Expanded( 
+          Expanded(
             flex: 2,
             child: Card(
-              color: Colors.blueGrey,
+              color: Colors.blueGrey[400],
               child: RecentGoalsPage(), // Example color for Recent Goals
             )
           ),
 
-          const Expanded( 
+          Expanded(
             flex: 2,
             child: Card(
-              color: Colors.blueGrey,
+              color: Colors.blueGrey[400],
               child: RandomTipsPage(), // Example color for Recent Goals
             )
           ),
@@ -118,7 +118,7 @@ class HomeScreen extends StatelessWidget {
           /*
           SectionCard(
             title: 'Random Tips',
-            
+
             color: Colors.blueGrey,
             onTap: () {
               Navigator.push(
@@ -136,8 +136,8 @@ class HomeScreen extends StatelessWidget {
 // Would put in separate file, but only really needed to separate home page content
 class SectionCard extends StatelessWidget {
   const SectionCard({super.key,
-    required this.title, 
-    required this.onTap, 
+    required this.title,
+    required this.onTap,
     required this.color});
 
   final String title;
@@ -147,10 +147,10 @@ class SectionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: const EdgeInsets.all(11.0), // Increased margin for larger bubble appearance
+      margin: const EdgeInsets.all(40.0), // Increased margin for larger bubble appearance
       color: color,
       child: Padding(
-        padding: const EdgeInsets.all(55.0),
+        padding: const EdgeInsets.all(10.0),
         child: ListTile(
           title: Text(
             title,

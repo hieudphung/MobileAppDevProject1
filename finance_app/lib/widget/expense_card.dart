@@ -66,7 +66,8 @@ class ExpenseCard extends StatelessWidget {
     String cardTitle = getMonth(monthDataset.monthNumber);
     
     return Card (
-      child: Column(
+        color: Colors.blueGrey[400],
+        child: Column(
         children: <Widget>[
           ExpenseHead(cardTitle: cardTitle),
           ExpenseBody(
@@ -91,8 +92,14 @@ class ExpenseHead extends StatelessWidget {
     return SizedBox (
       child: Align(
         alignment: Alignment.centerLeft,
-        child: Text(cardTitle),
-      )
+        child: Text(
+          cardTitle,
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 18,
+          ),
+        ),
+      ),
     );
   }
 }
@@ -168,21 +175,37 @@ class StatBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column (
+    return Column(
       children: <Widget>[
-            SizedBox(
-              child: OutlinedButton(
-              onPressed: () => {_showExpenditureDetailDialog(context)}, 
-              child: const Text('Details'),
-        ),),
         SizedBox(
-              child: OutlinedButton(
-              onPressed: () => {_showAddExpenditureDialog(context)}, 
-              child: const Text('Add To'),
-        ),),
-      ],);
+          child: OutlinedButton(
+            onPressed: () => _showExpenditureDetailDialog(context),
+            style: OutlinedButton.styleFrom(
+              side: BorderSide(color: Colors.white), // Border color
+            ),
+            child: Text(
+              'Details',
+              style: TextStyle(color: Colors.white), // Text color
+            ),
+          ),
+        ),
+        SizedBox(
+          child: OutlinedButton(
+            onPressed: () => _showAddExpenditureDialog(context),
+            style: OutlinedButton.styleFrom(
+              side: BorderSide(color: Colors.white), // Border color
+            ),
+            child: Text(
+              'Add To',
+              style: TextStyle(color: Colors.white), // Text color
+            ),
+          ),
+        ),
+      ],
+    );
   }
-  
+
+
   void _showAddExpenditureDialog(BuildContext context) {
     // For getting form data from pop-up
     Map data = {}; 
@@ -449,7 +472,7 @@ class _AddExpenditureDetailsState extends State<AddExpenditureDetails> {
             ExpenseDetailList(monthId: widget.monthId, isExpense: false),
         ],
       ),
-      
+
     );
   }
 }
@@ -467,15 +490,15 @@ class ExpenseDetailList extends StatelessWidget {
   Widget build(BuildContext context) {
     return //Text('${expenseDetails.length}');
       Expanded(
-        child: 
+        child:
               Consumer<FinanceProvider>(
                 builder: (context, provider, child) =>
                 ListView.builder(
               shrinkWrap: true,
-              itemCount: isExpense ? 
-                          provider.getExpensesByMonth(monthId).length : 
+              itemCount: isExpense ?
+                          provider.getExpensesByMonth(monthId).length :
                           provider.getIncomeByMonth(monthId).length,
-              itemBuilder: (_,int index) => isExpense ? 
+              itemBuilder: (_,int index) => isExpense ?
                                             ExpenseDetail(expenseToDetail: provider.getExpensesByMonth(monthId)[index]) :
                                             ExpenseDetail(expenseToDetail: provider.getIncomeByMonth(monthId)[index]),
             )
