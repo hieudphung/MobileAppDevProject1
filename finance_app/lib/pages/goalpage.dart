@@ -14,9 +14,10 @@ class GoalsScreen extends StatelessWidget {
     return Column(
       children: <Widget>[
         ListTile(
-          title: const Text('Finance Goals'),
+          title: const Text('Finance Goals', style: TextStyle(color: Colors.white),),
           trailing: IconButton(
             icon: const Icon(Icons.add),
+            color: Colors.white,
             onPressed: () {
               _showAddGoalDialog(context);
             },
