@@ -205,7 +205,7 @@ class FinanceProvider with ChangeNotifier {
     //They should be organized by months, if all expenses are taken
     
     //Iterate by available months
-    for (var month = 6; month > 0; month--) {
+    for (var month = 7; month > 0; month--) {
       //bins for expenses
       double totalGroceries = 0;
       double totalInsurance = 0;

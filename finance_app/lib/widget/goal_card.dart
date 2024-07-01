@@ -139,7 +139,7 @@ class GoalButtons extends StatelessWidget {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Add New Goal'),
+          title: const Text('Pay for Goal'),
           content: PayGoalForm(keepingData: saveData),
           actions: <Widget>[
             TextButton(
@@ -268,6 +268,8 @@ class _PayGoalFormState extends State<PayGoalForm> {
       month = 5;
     } else if (_monthName == 'June') {
       month = 6;
+    } else if (_monthName == 'July') {
+      month = 7;
     }
   }
 
@@ -290,7 +292,7 @@ class _PayGoalFormState extends State<PayGoalForm> {
 
           DropdownButtonFormField<String>(
             value: _monthName,
-            items: <String>['January', 'February', 'March', 'April', 'May', 'June'].map((String value) {
+            items: <String>['January', 'February', 'March', 'April', 'May', 'June', 'July'].map((String value) {
               return DropdownMenuItem<String>(
                 value: value,
                 child: Text(value),

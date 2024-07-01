@@ -17,7 +17,10 @@ String getMonth(int month) {
         return ' May';
       case 6:
         return ' June';
+      case 7:
+        return 'July';
         //Only really adding up until June, to replicate as if goes by current month
+        //Now goes up to July, in nod to the extended deadline
     }
 
   return 'None';
